@@ -12,6 +12,8 @@
 #include "Particle.h"
 #include "TrigLib.h"
 
+using namespace std;
+
 #define SECS_PER_TICK 0.0083
 clock_t lastUpdateTime;
 
@@ -27,6 +29,8 @@ bool keyboard[4];
 bool* keySpecialStates = new bool[256];
 
 float angle = 0;
+
+std::vector<particle> particleList;
 
 //Draws the axis
 void axis(int sizeX, int sizeY, int sizeZ){
@@ -82,6 +86,37 @@ void floor(int x, int z)
 	glEnd();
 }
 
+void objectDraw()
+{
+	for(int i=0; i<particleList.size(); i++){
+		//set up particle colour
+		/*glBegin(GL_POINTS);
+			glColor3f(particleList[i].particleColour.r,particleList[i].particleColour.g,particleList[i].particleColour.b);
+		glEnd();*/
+
+		glPushMatrix();
+			//set particle position
+			/*glTranslatef(particleList[i].particlePosition.x,particleList[i].particlePosition.y,particleList[i].particlePosition.z);*/
+			glTranslated(particleList[i].getPosition().x,particleList[i].getPosition().y,particleList[i].getPosition().z);
+			glPushMatrix();
+				//rotate particle and draw
+				/*glRotatef(particleList[i].rot[0],1,0,0);
+				glRotatef(particleList[i].rot[1],0,1,0);
+				glRotatef(particleList[i].rot[2],0,0,1);*/
+
+				//shapes the particle
+				/*shapeParticle(particleList[i]);*/
+				glutSolidCube(particleList[i].getSize());
+			glPopMatrix();
+		glPopMatrix();
+	}
+}
+
+void createCube(GLdouble x, GLdouble y, GLdouble z)
+{
+	particleList.push_back(particle(point3D(x,y,z),colour(180,120,240),5,point3D(),vec3D(0,0,0),"cube"));
+}
+
 //Handling ASCII keys
 void kbd(unsigned char key, int x, int y)
 {
@@ -126,7 +161,8 @@ void SpecialKeyInput(int key, int x, int y)
 
 }
 
-void SpecialUpFunc(int key, int x, int y){
+void SpecialUpFunc(int key, int x, int y)
+{
 	if(key == GLUT_KEY_LEFT)
 	{
 		keyboard[0] = false;
@@ -142,6 +178,38 @@ void SpecialUpFunc(int key, int x, int y){
 	if(key == GLUT_KEY_DOWN)
 	{
 		keyboard[3] = false;
+	}
+}
+
+void MouseClick(int btn, int state, int x, int y)
+{
+	if(btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+	{
+		GLint viewport[4];
+		GLdouble modelview[16];
+		GLdouble projection[16];
+		GLfloat winX, winY, winZ;
+		GLdouble posX, posY, posZ;
+
+		glGetIntegerv(GL_VIEWPORT, viewport);
+		glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+		glGetDoublev(GL_PROJECTION_MATRIX, projection);
+
+		winX = (float)x;
+		winY = (float)viewport[3] - (float)y;
+		glReadPixels(x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
+
+		gluUnProject(winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
+
+		cout << posX;
+		printf(", ");
+		cout << posY;
+		printf(", ");
+		cout << posZ;
+		printf("\n");
+
+		createCube(posX, posY, posZ);
+
 	}
 }
 
@@ -208,6 +276,8 @@ void display(void)
 	floor(70, 0);
 	walls(70);
 
+	objectDraw();
+
 	glutSwapBuffers();
 }
 
@@ -224,7 +294,7 @@ int main(int argc, char** argv)
 	glutInitWindowSize(screenSize[0], screenSize[1]);
 	glutInitWindowPosition(100, 100);
 
-	glutCreateWindow("Assignment 2 - Hun Ko - 1156482");
+	glutCreateWindow("Simpler Modler");
 
 	glClearColor(0, 0, 0, 0);
 
@@ -232,6 +302,7 @@ int main(int argc, char** argv)
 	//glutKeyboardUpFunc(keyUp);
 	glutSpecialFunc(SpecialKeyInput);
 	glutSpecialUpFunc(SpecialUpFunc);
+	glutMouseFunc(MouseClick);
 
 	glEnable (GL_DEPTH_TEST);
 
