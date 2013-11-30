@@ -23,14 +23,51 @@ using namespace std;
 int screenSize[2] = {500,500};
 int cameraPos[3] = {150, 150, 150};
 int startPos[3] = {0,0,0};
+float lightsource1[4] = {-75.0,100.0,150.0,1.0};
+float lightsource2[4] = {75.0,100.0,150.0,1.0};
 
 int timer = 0;
 bool keyboard[4];
 bool* keySpecialStates = new bool[256];
+bool lightSource;
 
 float angle = 0;
 
+float position[4] = {1.5,0,0, 0};
+float amb[4] = {1.0, 1, 1, 1};
+float diff[4] = {1,0,0, 1};
+float spec[4] = {0,0,1, 1};
+
+float Wpos[4] = {2, 2, 2, 1};
+float Wamb[4] = {1, 1, 1, 1};
+float Wdif[4] = {1, 0, 0, 1};
+float Wspc[4] = {0, 0, 1, 1};
+
+//Ruby
+float m_amb[] = {0.1745,0.01175,0.01175, 1.0};
+float m_dif[] = {0.61424,0.04136,0.04136, 1.0};
+float m_spec[] = {0.727811,0.626959,0.626959};
+float shiny = 0.6;
+
+//Chrome
+float b_amb[] = {0.25,0.25,0.25, 1.0};
+float b_dif[] = {0.4,0.4,0.4, 1.0};
+float b_spec[] = {0.774597,0.774597,0.774597, 1.0};
+float b_shiny = 0.6;
+
+//Emerald
+float e_amb[] = {0.0215,0.1745,0.0215, 1.0};
+float e_dif[] = {0.07568,0.61424,0.07568, 1.0};
+float e_spec[] = {0.633,0.727811,0.633, 1.0};
+float e_shiny = 0.6;
+
 std::vector<particle> particleList;
+
+//Prints manual to console
+void printManual()
+{
+
+}
 
 //Draws the axis
 void axis(int sizeX, int sizeY, int sizeZ){
@@ -53,24 +90,43 @@ void axis(int sizeX, int sizeY, int sizeZ){
 }
 
 //Draws walls for the room
-void walls(float size)
+void drawScene(float size)
 {
 	glBegin(GL_QUADS);
 		glColor3f(0.20,0.80,0.65);
+
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, e_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, e_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, e_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, e_shiny);
+
+		//Left cube face
+		glNormal3d(-1, 0, 0);
 		glVertex3f(size, size, size);
 		glVertex3f(size, -size, size);
 		glVertex3f(size, -size, 0);
 		glVertex3f(size, size, 0);
 
+		//Back cube face
+		glNormal3d(0, 1, 0);
 		glVertex3f(-size, -size, size);
 		glVertex3f(size, -size, size);
 		glVertex3f(size, -size, 0);
 		glVertex3f(-size, -size, 0);
 
+		//Right cube face
+		glNormal3d(1, 0, 0);
 		glVertex3f(-size, -size, size);
 		glVertex3f(-size, size, size);
 		glVertex3f(-size, size, 0);
 		glVertex3f(-size, -size, 0);
+
+		//Bottom cube face
+		glNormal3d(0, 0, 1);
+		glVertex3f(size, size, 0);
+		glVertex3f(-size,size,0);
+		glVertex3f(-size,-size,0);
+		glVertex3f(size,-size,0);
 	glEnd();
 }
 
@@ -79,6 +135,8 @@ void floor(int x, int z)
 {
 	glBegin(GL_QUADS);
 		glColor3f(0.65,0.65,0.65);
+
+		glNormal3d(0, 0, -1);
 		glVertex3f(x, x, z);
 		glVertex3f(-x,x,z);
 		glVertex3f(-x,-x,z);
@@ -114,6 +172,11 @@ void objectDraw()
 
 void createCube(GLdouble x, GLdouble y, GLdouble z)
 {
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, b_amb);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, b_dif);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, b_spec);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, b_shiny);
+
 	particleList.push_back(particle(point3D(x,y,z),colour(180,120,240),5,point3D(),vec3D(0,0,0),"cube"));
 }
 
@@ -127,7 +190,7 @@ void kbd(unsigned char key, int x, int y)
 	}
 	if(key == 'f' || key == 'F')
 	{
-
+		lightSource = !lightSource;
 	}
 	if(key == 'r' || key == 'R')
 	{
@@ -208,6 +271,11 @@ void MouseClick(int btn, int state, int x, int y)
 		cout << posZ;
 		printf("\n");
 
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, b_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, b_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, b_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, b_shiny);
+
 		createCube(posX, posY, posZ);
 
 	}
@@ -241,11 +309,6 @@ void updateParticle(double deltaTime)
 	glutPostRedisplay();
 }
 
-void printManual()
-{
-
-}
-
 //updating particles
 void update(void)
 {
@@ -254,6 +317,31 @@ void update(void)
 		lastUpdateTime += CLOCKS_PER_SEC*SECS_PER_TICK;
 		updateParticle(SECS_PER_TICK);
 	}
+
+		GLfloat lightpos1[] = {lightsource1[0],lightsource1[1],lightsource1[2],lightsource1[3]};
+		glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
+
+
+		GLfloat lightpos2[] = {lightsource2[0],lightsource2[1],lightsource2[2],lightsource2[3]};
+		glLightfv(GL_LIGHT1, GL_POSITION, lightpos2);
+
+}
+
+void init(void)
+{
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0); 
+	glEnable(GL_LIGHT1);
+
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, spec);
+
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, diff);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, amb);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, spec);
+
+	glShadeModel(GL_SMOOTH);
 }
 
 //Main display function
@@ -273,8 +361,8 @@ void display(void)
 	
 	//Drawing the scene
 	axis(screenSize[0],screenSize[1], screenSize[0]);
-	floor(70, 0);
-	walls(70);
+	//floor(70, 0);
+	drawScene(70);
 
 	objectDraw();
 
@@ -304,7 +392,9 @@ int main(int argc, char** argv)
 	glutSpecialUpFunc(SpecialUpFunc);
 	glutMouseFunc(MouseClick);
 
-	glEnable (GL_DEPTH_TEST);
+	glEnable (GL_DEPTH_TEST); // | GL_LIGHTING | GL_LIGHT0);
+
+	init();
 
 	glutDisplayFunc(display);	//registers "display" as the display callback function
 	glutIdleFunc(update);
