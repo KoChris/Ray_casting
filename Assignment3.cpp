@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <fstream>
 
 #include "Math3DLib.h"
 #include "Particle.h"
@@ -110,6 +111,103 @@ void printManual()
 
 }
 
+//Saves the current scene
+void save()
+{
+	string file = "";
+	printf("Enter the name of the file you would like to save to (ending in .txt)\n");
+	getline(cin, file);
+
+	ofstream saveTo (file);
+	if(saveTo.is_open())
+	{
+		saveTo << cameraAngle;
+		saveTo << "\n";
+		saveTo << xpos;
+		saveTo << "\n";
+		saveTo << ypos;
+		saveTo << "\n";
+		saveTo << zpos;
+		saveTo << "\n";
+		saveTo << xrot;
+		saveTo << "\n";
+		saveTo << yrot;
+		saveTo << "\n";
+		saveTo << angle;
+		saveTo << "\n";
+		saveTo << mouseActive;
+		saveTo << "\n";
+		saveTo << sceneRotation[0];
+		saveTo << "\n";
+		saveTo << sceneRotation[1];
+		saveTo << "\n";
+		//continue this for required save variables
+
+
+//float lightsource1[4] = {0.0,0.0,150.0,1.0};
+//float lightsource2[4] = {0,-100.0,110.0,1.0};
+//float lightsourceSize = 5.0;
+//
+////Timer for update func
+//int timer = 0;
+//
+////Variables for keyboard
+//bool keyboard[4]; //Arrow Keys
+//bool* keySpecialStates = new bool[256];
+//
+////Index for different shapes
+//int shapeSelectIndex = 0;
+//
+////Index for different materials
+//int materialSelectIndex = 0;
+//
+////Index for selected object
+//int selectedObjectIndex = -1;
+//
+////Declaring lists
+//std::vector<particle> particleList;
+//std::vector<particle> lightList;
+//
+////Light variables
+//float position[4] = {0,0,0, 1};
+
+
+		saveTo.close();
+	} else 
+	{
+		printf("Unable to save to file\n");
+	}
+}
+
+
+
+
+
+//Loads the current scene
+void load()
+{
+	string file = "";
+	printf("Enter the name of the file you would like to load from (ending in .txt)\n");
+	getline(cin, file);
+
+	string line;
+		ifstream loadFrom (file);
+
+	if(loadFrom.is_open())
+	{
+		getline(loadFrom,line);
+		
+
+
+
+
+		loadFrom.close();
+	}
+	else
+	{
+		printf("Unable to load file\n");
+	}
+}
 
 
 //Draws the axis
@@ -304,7 +402,19 @@ void deleteObject(point3D pos)
 	}
 }
 
-
+//Modifying object material
+void modifyObjectMaterial(point3D pos)
+{
+		if(!particleList.empty()){
+		for(int i=0; i < particleList.size(); i++){
+			if(Math3DLib::distance(particleList[i].getPosition(),pos)<=particleList[i].getSize()){
+				particleList[i].setMaterial(materialList[materialSelectIndex]);
+				break;
+			}
+		}
+		glutPostRedisplay();
+	}
+}
 
 //Functions for alternating shapes
 void generateShapeList()
@@ -654,6 +764,12 @@ void kbd(unsigned char key, int x, int y)
 		xpos -= float(cos(yrotrad)) * 2;
 		zpos -= float(sin(yrotrad)) * 2;
     }
+
+	//Material Modification
+	if(key==']')
+	{
+		modifyObjectMaterial(fetchLocation(x, y));
+	}
 
 	//Transformations
 	if (key=='z')
