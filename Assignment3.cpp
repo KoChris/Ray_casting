@@ -196,6 +196,13 @@ void selectObject(point3D pos)
 
 void drawBoundingBox(particle p)
 {
+	float box_col[] = {0,1,0, 1.0};
+	float box_shine = 1;
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, box_col);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, box_col);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, box_col);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, box_shine);
+
 	if(p.getShape()=="cube"){
 		glutWireCube(p.getSize()+0.5);
 	} else if (p.getShape()=="sphere"){
