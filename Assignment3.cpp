@@ -12,7 +12,6 @@
 #include "Particle.h"
 #include "TrigLib.h"
 
-using namespace std;
 
 #define SECS_PER_TICK 0.0083
 clock_t lastUpdateTime;
@@ -23,6 +22,7 @@ using namespace std;
 int screenSize[2] = {500,500};
 int cameraPos[3] = {150, 150, 150};
 int startPos[3] = {0,0,0};
+int shapeSelectIndex = 0;
 float lightsource1[4] = {-75.0,100.0,150.0,1.0};
 float lightsource2[4] = {75.0,100.0,150.0,1.0};
 
@@ -68,6 +68,61 @@ float r_shiny = 0.078125;
 
 std::vector<particle> particleList;
 std::vector<particle> lightList;
+
+void generateShapeList()
+{
+	shapeList.push_back("cube");
+	shapeList.push_back("sphere");
+	shapeList.push_back("cone");
+	shapeList.push_back("cylinder");
+	shapeList.push_back("torus");
+	shapeList.push_back("teapot");
+}
+void nextShape()
+{
+	shapeSelectIndex++;
+	if(shapeSelectIndex>shapeList.size()-1)
+	{
+		shapeSelectIndex = 0;
+	}
+}
+void prevShape()
+{
+	shapeSelectIndex--;
+	if(shapeSelectIndex<0)
+	{
+		shapeSelectIndex = shapeList.size()-1;
+	}
+}
+void selectShape(particle p)
+{
+	if(p.getShape()=="cube"){
+		glutSolidCube(p.getSize());
+	} else if (p.getShape()=="sphere"){
+		glutSolidSphere(p.getSize(),30,30);
+	} else if (p.getShape()=="cone"){
+		glutSolidCone(p.getSize(),p.getSize(),30,30);
+	} else if (p.getShape()=="cylinder"){
+		glutSolidCone(p.getSize(),p.getSize(),2,10);
+	} else if (p.getShape()=="torus"){
+		glutSolidTorus(p.getSize()/2,p.getSize(),10,10);
+	} else if (p.getShape()=="teapot"){
+		glutSolidTeapot(p.getSize());
+	}
+}
+
+void deleteObject(point3D pos)
+{
+	if(!particleList.empty()){
+		for(int i=0; i < particleList.size(); i++){
+			if(Math3DLib::distance(particleList[i].getPosition(),pos)<=particleList[i].getSize()){
+				particleList.erase(particleList.begin()+i);
+				break;
+			}
+		}
+		glutPostRedisplay();
+	}
+}
 
 //Prints manual to console
 void printManual()
@@ -152,40 +207,61 @@ void floor(int x, int z)
 
 void objectDraw()
 {
-	for(int i=0; i<particleList.size(); i++){
+	for(int i=0; i<particleList.size(); i++)
+	{
 		//set up particle colour
 		/*glBegin(GL_POINTS);
-			glColor3f(particleList[i].particleColour.r,particleList[i].particleColour.g,particleList[i].particleColour.b);
+		glColor3f(particleList[i].particleColour.r,particleList[i].particleColour.g,particleList[i].particleColour.b);
 		glEnd();*/
 
 		glPushMatrix();
-			//set particle position
-			/*glTranslatef(particleList[i].particlePosition.x,particleList[i].particlePosition.y,particleList[i].particlePosition.z);*/
-			glTranslated(particleList[i].getPosition().x,particleList[i].getPosition().y,particleList[i].getPosition().z);
-			glPushMatrix();
-				//rotate particle and draw
-				/*glRotatef(particleList[i].rot[0],1,0,0);
-				glRotatef(particleList[i].rot[1],0,1,0);
-				glRotatef(particleList[i].rot[2],0,0,1);*/
+		//set particle position
+		/*glTranslatef(particleList[i].particlePosition.x,particleList[i].particlePosition.y,particleList[i].particlePosition.z);*/
+		glTranslated(particleList[i].getPosition().x,particleList[i].getPosition().y,particleList[i].getPosition().z);
+		glPushMatrix();
+		//rotate particle and draw
+		/*glRotatef(particleList[i].rot[0],1,0,0);
+		glRotatef(particleList[i].rot[1],0,1,0);
+		glRotatef(particleList[i].rot[2],0,0,1);*/
 
-				//shapes the particle
-				/*shapeParticle(particleList[i]);*/
-				glutSolidCube(particleList[i].getSize());
-			glPopMatrix();
+		//shapes the particle
+		/*shapeParticle(particleList[i]);*/
+		selectShape(particleList[i]);
+		glPopMatrix();
 		glPopMatrix();
 	}
+	glutPostRedisplay();
 }
 
-void createCube(GLdouble x, GLdouble y, GLdouble z)
+void createObject(point3D pos)
 {
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, b_amb);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, b_dif);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, b_spec);
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, b_shiny);
 
-	particleList.push_back(particle(point3D(x,y,z),colour(180,120,240),5,point3D(),vec3D(0,0,0),"cube"));
+	particleList.push_back(particle(pos,colour(180,120,240),5,point3D(1,1,1),vec3D(0,0,0),shapeList[shapeSelectIndex]));
 }
 
+point3D fetchLocation(int x, int y){
+	GLint viewport[4];
+	GLdouble modelview[16];
+	GLdouble projection[16];
+	GLfloat winX, winY, winZ;
+	GLdouble objX, objY, objZ;
+
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+
+	winX = (float)x;
+	winY = (float)viewport[3] - (float)y;
+	glReadPixels(x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
+
+	gluUnProject(winX, winY, winZ, modelview, projection, viewport, &objX,&objY,&objZ);
+
+	return point3D(objX,objY,objZ);
+}
 //Handling ASCII keys
 void kbd(unsigned char key, int x, int y)
 {
@@ -227,6 +303,10 @@ void kbd(unsigned char key, int x, int y)
 	if(key == 'm' || key == 'M')
 	{
 		lightsource1[2] += 10;
+	}
+	if(key==' ')
+	{
+		createObject(fetchLocation(x, y));
 	}
 }
 
@@ -276,36 +356,20 @@ void MouseClick(int btn, int state, int x, int y)
 {
 	if(btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-		GLint viewport[4];
-		GLdouble modelview[16];
-		GLdouble projection[16];
-		GLfloat winX, winY, winZ;
-		GLdouble posX, posY, posZ;
 
-		glGetIntegerv(GL_VIEWPORT, viewport);
-		glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-		glGetDoublev(GL_PROJECTION_MATRIX, projection);
-
-		winX = (float)x;
-		winY = (float)viewport[3] - (float)y;
-		glReadPixels(x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
-
-		gluUnProject(winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
-
-		cout << posX;
-		printf(", ");
-		cout << posY;
-		printf(", ");
-		cout << posZ;
+	}
+	if(btn == GLUT_RIGHT_BUTTON && state == GLUT_DOWN){
+		deleteObject(fetchLocation(x, y));
+	}
+	if(btn == 3 && state == GLUT_DOWN){
+		prevShape();
+		cout<<shapeList[shapeSelectIndex];
 		printf("\n");
-
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, b_amb);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, b_dif);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, b_spec);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, b_shiny);
-
-		createCube(posX, posY, posZ);
-
+	}
+	if(btn == 4 && state == GLUT_DOWN){
+		nextShape();
+		cout<<shapeList[shapeSelectIndex];
+		printf("\n");
 	}
 }
 
@@ -401,7 +465,8 @@ void display(void)
 int main(int argc, char** argv)
 {
 	printManual();
-
+	generateShapeList();
+	
 	srand(time(0));
 	glutInit(&argc, argv);		//starts up GLUT
 
@@ -410,7 +475,7 @@ int main(int argc, char** argv)
 	glutInitWindowSize(screenSize[0], screenSize[1]);
 	glutInitWindowPosition(100, 100);
 
-	glutCreateWindow("Simpler Modler");
+	glutCreateWindow("Simpler Modeller");
 
 	glClearColor(0, 0, 0, 0);
 
@@ -420,6 +485,11 @@ int main(int argc, char** argv)
 	glutSpecialUpFunc(SpecialUpFunc);
 	glutMouseFunc(MouseClick);
 
+	
+	//need to fix normals on walls
+	glFrontFace(GL_CCW);
+	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
 	glEnable (GL_DEPTH_TEST); 
 
 	init();
