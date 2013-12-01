@@ -24,8 +24,11 @@ using namespace std;
 int screenSize[2] = {500,500};
 
 //Initial camera position
-int cameraPos[3] = {150, 150, 150};
+int cameraPos[3] = {300, 300, 300};
 float cameraAngle = 0;
+
+float xpos = 0, ypos = 0, zpos = 0, xrot = 0, yrot = 0, angle=0.0;
+float lastx, lasty;
 
 //Scene Rotation angle
 float sceneRotation[2];
@@ -305,6 +308,11 @@ void objectDraw()
 		glPopMatrix();
 	}
 
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, w_amb);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, w_dif);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, w_spec);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, w_shiny);
+
 	for(int j=0; j<lightList.size(); j++)
 	{
 		glPushMatrix();	
@@ -478,6 +486,54 @@ void kbd(unsigned char key, int x, int y)
 	{
 		sceneRotation[1] -= 1;
 	}
+
+	//Camera movement
+	    if (key=='w')
+    {
+		float xrotrad, yrotrad;
+		yrotrad = (yrot / 180 * 3.141592654f);
+		xrotrad = (xrot / 180 * 3.141592654f); 
+		xpos += float(sin(yrotrad)) * 1.5;
+		zpos -= float(cos(yrotrad)) * 1.5;
+		ypos -= float(sin(xrotrad)) * 1.5;
+    }
+
+    if (key=='s')
+    {
+		float xrotrad, yrotrad;
+		yrotrad = (yrot / 180 * 3.141592654f);
+		xrotrad = (xrot / 180 * 3.141592654f); 
+		xpos -= float(sin(yrotrad)) * 1.5;
+		zpos += float(cos(yrotrad)) * 1.5;
+		ypos += float(sin(xrotrad)) * 1.5;
+    }
+
+    if (key=='d')
+    {
+		float yrotrad;
+		yrotrad = (yrot / 180 * 3.141592654f);
+		xpos += float(cos(yrotrad)) * 2;
+		zpos += float(sin(yrotrad)) * 2;
+    }
+
+    if (key=='a')
+    {
+		float yrotrad;
+		yrotrad = (yrot / 180 * 3.141592654f);
+		xpos -= float(cos(yrotrad)) * 2;
+		zpos -= float(sin(yrotrad)) * 2;
+    }
+}
+
+//Mouse passive movement
+void mouseMovement(int x, int y) 
+{
+    int diffx=x-lastx; //check the difference between the current x and the last x position
+    int diffy=y-lasty; //check the difference between the current y and the last y position
+    lastx=x; //set lastx to the current x position
+    lasty=y; //set lasty to the current y position
+    xrot += (float) diffy; //set the xrot to xrot with the addition of the difference in the y position
+    yrot += (float) diffx;    //set the xrot to yrot with the addition of the difference in the x position
 }
 
 //Mouse controls
@@ -603,7 +659,11 @@ void update(void)
 
 }
 
-
+void camera (void) {
+    glRotatef(xrot,1.0,0.0,0.0);  //rotate our camera on teh x-axis (left and right)
+    glRotatef(yrot,0.0,1.0,0.0);  //rotate our camera on the y-axis (up and down)
+    glTranslated(-xpos,-ypos,-zpos); //translate the screento the position of our camera
+}
 
 //Initial function - Initializes lighting
 void init(void)
@@ -659,15 +719,19 @@ void display(void)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective (60.0, 1, 0.1, 500.0);
-	glRotatef(sceneRotation[0],1,0,0);
-	glRotatef(sceneRotation[1],0,1,0);
 	glMatrixMode(GL_MODELVIEW);
+
+	camera();
 
 	//Camera location & viewing
 	gluLookAt(cameraPos[0]*sind(cameraAngle), cameraPos[1]*cosd(cameraAngle),cameraPos[2],0,0,0,0,0,1);
 	
+	//Scene Rotation
+	glRotatef(sceneRotation[0],1,0,0);
+	glRotatef(sceneRotation[1],0,1,0);
+	
 	//Drawing of scene
-	axis(screenSize[0],screenSize[1], screenSize[0]);
+	//axis(screenSize[0],screenSize[1], screenSize[0]);
 	drawScene(70);
 
 	//Drawing of the objects
@@ -704,6 +768,7 @@ int main(int argc, char** argv)
 	glutKeyboardFunc(kbd);
 	glutSpecialFunc(SpecialKeyInput);
 	glutSpecialUpFunc(SpecialUpFunc);
+    glutPassiveMotionFunc(mouseMovement); 
 	glutMouseFunc(MouseClick);
 
 	//Enables depth test for proper z buffering
