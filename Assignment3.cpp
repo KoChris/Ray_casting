@@ -687,6 +687,9 @@ int main(int argc, char** argv)
 	//init to initialize lighting
 	init();
 
+	//Initialize materialList
+	generateMaterialList();
+
 	//Initialize shapelist
 	generateShapeList();
 
