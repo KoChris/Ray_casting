@@ -43,10 +43,14 @@ bool* keySpecialStates = new bool[256];
 //Index for different shapes
 int shapeSelectIndex = 0;
 
+//Index for different materials
+int materialSelectIndex = 0;
+
 //Declaring lists
 std::vector<particle> particleList;
 std::vector<particle> lightList;
 std::vector<string> shapeList;
+std::vector<string> materialList;
 
 //Light variables
 float position[4] = {1.5,0,0, 0};
@@ -161,12 +165,7 @@ void drawScene(float size)
 //Creating and Delting of objects
 void createObject(point3D pos)
 {
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, b_amb);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, b_dif);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, b_spec);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, b_shiny);
-
-	particleList.push_back(particle(pos,colour(180,120,240),5,point3D(1,1,1),vec3D(0,0,0),shapeList[shapeSelectIndex]));
+	particleList.push_back(particle(pos,colour(180,120,240),5,point3D(1,1,1),vec3D(0,0,0),shapeList[shapeSelectIndex],materialList[materialSelectIndex]));
 }
 
 void deleteObject(point3D pos)
@@ -231,39 +230,75 @@ void selectShape(particle p)
 }
 
 
+//Functions for alternating materials
+void generateMaterialList()
+{
+	materialList.push_back("ruby");
+	materialList.push_back("chrome");
+	materialList.push_back("emerald");
+	materialList.push_back("redplastic");
+}
+
+void selectMaterial(particle p)
+{
+	if(p.getMaterial()=="ruby"){
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
+	} else if(p.getMaterial()=="chrome"){
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, b_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, b_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, b_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, b_shiny);
+	} else if(p.getMaterial()=="emerald"){
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, e_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, e_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, e_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, e_shiny);
+	} else if(p.getMaterial()=="redplastic"){
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, r_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, r_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, r_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, r_shiny);
+	} else if(p.getMaterial()==""){
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, r_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, r_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, r_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, r_shiny);
+	}
+}
+
+
 
 //Drawing objects
 void objectDraw()
 {
 	for(int i=0; i<particleList.size(); i++)
 	{
-		//set up particle colour
-		/*glBegin(GL_POINTS);
-		glColor3f(particleList[i].particleColour.r,particleList[i].particleColour.g,particleList[i].particleColour.b);
-		glEnd();*/
-
 		glPushMatrix();
-		//set particle position
-		/*glTranslatef(particleList[i].particlePosition.x,particleList[i].particlePosition.y,particleList[i].particlePosition.z);*/
-		glTranslated(particleList[i].getPosition().x,particleList[i].getPosition().y,particleList[i].getPosition().z);
-		glPushMatrix();
-		//rotate particle and draw
-		/*glRotatef(particleList[i].rot[0],1,0,0);
-		glRotatef(particleList[i].rot[1],0,1,0);
-		glRotatef(particleList[i].rot[2],0,0,1);*/
+			//set particle position
+			glTranslated(particleList[i].getPosition().x,particleList[i].getPosition().y,particleList[i].getPosition().z);
+			glPushMatrix();
+				//rotate particle and draw
+				/*glRotatef(particleList[i].rot[0],1,0,0);
+				glRotatef(particleList[i].rot[1],0,1,0);
+				glRotatef(particleList[i].rot[2],0,0,1);*/
 
-		//shapes the particle
-		/*shapeParticle(particleList[i]);*/
-		selectShape(particleList[i]);
-		glPopMatrix();
+				//selects the particle material
+				selectMaterial(particleList[i]);
+
+				//shapes and draws the particle
+				selectShape(particleList[i]);
+			glPopMatrix();
 		glPopMatrix();
 	}
 
 	for(int j=0; j<lightList.size(); j++)
 	{
 		glPushMatrix();	
-		glTranslatef(lightList[j].getPosition().x,lightList[j].getPosition().y,lightList[j].getPosition().z);
-		glutSolidSphere(7,8,8);
+			glTranslatef(lightList[j].getPosition().x,lightList[j].getPosition().y,lightList[j].getPosition().z);
+			glutSolidSphere(7,8,8);
 		glPopMatrix();
 	}
 
@@ -393,6 +428,28 @@ void kbd(unsigned char key, int x, int y)
 	{
 		createObject(fetchLocation(x, y));
 	}
+
+	//Selecting Materials
+	if(key=='1')
+	{
+		materialSelectIndex=0;
+	}
+	if(key=='2')
+	{
+		materialSelectIndex=1;
+	}
+	if(key=='3')
+	{
+		materialSelectIndex=2;
+	}
+	if(key=='4')
+	{
+		materialSelectIndex=3;
+	}
+	if(key=='5')
+	{
+		//materialSelectIndex=4;
+	}
 }
 
 //Mouse controls
@@ -438,7 +495,14 @@ void SpecialKeyInput(int key, int x, int y)
 	{
 		keyboard[3] = true;
 	}
-
+	if(key == GLUT_KEY_PAGE_UP)
+	{
+		nextShape();
+	}
+	if(key == GLUT_KEY_PAGE_DOWN)
+	{
+		prevShape();
+	}
 }
 
 void SpecialUpFunc(int key, int x, int y)
@@ -527,7 +591,8 @@ void init(void)
 		lightsourceSize,
 		point3D(1,1,1),
 		vec3D(0,0,0),
-		"sphere"
+		"sphere",
+		"chrome"
 		)
 	);
 	lightList.push_back(particle(
@@ -536,7 +601,9 @@ void init(void)
 		lightsourceSize,
 		point3D(1,1,1),
 		vec3D(0,0,0),
-		"sphere")
+		"sphere",
+		"chrome"
+		)
 	);
 
 
@@ -613,9 +680,9 @@ int main(int argc, char** argv)
 	glEnable (GL_DEPTH_TEST);
 
 	//Enables backculling
-	glFrontFace(GL_CCW);
-	glCullFace(GL_BACK);
-	glEnable(GL_CULL_FACE);
+	//glFrontFace(GL_CCW);
+	//glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
 
 	//init to initialize lighting
 	init();
