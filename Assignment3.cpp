@@ -38,6 +38,9 @@ float lightsource1[4] = {0.0,0.0,150.0,1.0};
 float lightsource2[4] = {0,-100.0,110.0,1.0};
 float lightsourceSize = 5.0;
 
+//Initial particle size
+int particleSizeDefault = 5;
+
 
 //Timer for update func
 int timer = 0;
@@ -51,6 +54,9 @@ int shapeSelectIndex = 0;
 
 //Index for different materials
 int materialSelectIndex = 0;
+
+//Index for selected object
+int selectedObjectIndex = -1;
 
 //Declaring lists
 std::vector<particle> particleList;
@@ -173,12 +179,44 @@ void drawScene(float size)
 	glEnd();
 }
 
+//Selection of objects
+void selectObject(point3D pos)
+{
+	if(!particleList.empty()){
+		for(int i=0; i < particleList.size(); i++){
+			if(Math3DLib::distance(particleList[i].getPosition(),pos)<=particleList[i].getSize()){
+				selectedObjectIndex = i;
+				break;
+			}
+		}
+		glutPostRedisplay();
+	}
+}
+
+void drawBoundingBox(particle p)
+{
+	if(p.getShape()=="cube"){
+		glutWireCube(p.getSize()+0.5);
+	} else if (p.getShape()=="sphere"){
+		glutWireSphere(p.getSize()+0.5,30,30);
+	} else if (p.getShape()=="cone"){
+		glutWireCone((p.getSize()+0.5)/2,p.getSize()+0.5,30,30);
+	} else if (p.getShape()=="torus"){
+		glutWireTorus((p.getSize()+0.5)/2,p.getSize()+0.5,10,10);
+	} else if (p.getShape()=="teapot"){
+		glPushMatrix();
+		glRotatef(90,1,0,0);
+		glutWireTeapot(p.getSize()+0.5);
+		glPopMatrix();
+	}
+	
+}
 
 
-//Creating and Delting of objects
+//Creating and Deleting of objects
 void createObject(point3D pos)
 {
-	particleList.push_back(particle(pos,colour(180,120,240),5,point3D(1,1,1),vec3D(0,0,0),shapeList[shapeSelectIndex],materialList[materialSelectIndex]));
+	particleList.push_back(particle(pos,colour(180,120,240),particleSizeDefault,point3D(1,1,1),vec3D(0,0,0),shapeList[shapeSelectIndex],materialList[materialSelectIndex]));
 }
 
 void deleteObject(point3D pos)
@@ -187,6 +225,10 @@ void deleteObject(point3D pos)
 		for(int i=0; i < particleList.size(); i++){
 			if(Math3DLib::distance(particleList[i].getPosition(),pos)<=particleList[i].getSize()){
 				particleList.erase(particleList.begin()+i);
+				if(i = selectedObjectIndex)
+				{
+					selectedObjectIndex = -1;
+				}
 				break;
 			}
 		}
@@ -304,6 +346,11 @@ void objectDraw()
 
 				//shapes and draws the particle
 				selectShape(particleList[i]);
+
+				if(i == selectedObjectIndex){
+					drawBoundingBox(particleList[i]);
+				}
+
 			glPopMatrix();
 		glPopMatrix();
 	}
@@ -363,6 +410,7 @@ void kbd(unsigned char key, int x, int y)
 	}
 	if(key == 'r' || key == 'R')
 	{
+		selectedObjectIndex = -1;
 		particleList.clear();
 	}
 
@@ -486,7 +534,6 @@ void kbd(unsigned char key, int x, int y)
 	{
 		sceneRotation[1] -= 1;
 	}
-
 	//Camera movement
 	    if (key=='w')
     {
@@ -536,12 +583,13 @@ void mouseMovement(int x, int y)
     yrot += (float) diffx;    //set the xrot to yrot with the addition of the difference in the x position
 }
 
+
 //Mouse controls
 void MouseClick(int btn, int state, int x, int y)
 {
 	if(btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-
+		selectObject(fetchLocation(x, y));
 	}
 	if(btn == GLUT_RIGHT_BUTTON && state == GLUT_DOWN){
 		deleteObject(fetchLocation(x, y));
@@ -726,10 +774,9 @@ void display(void)
 	//Camera location & viewing
 	gluLookAt(cameraPos[0]*sind(cameraAngle), cameraPos[1]*cosd(cameraAngle),cameraPos[2],0,0,0,0,0,1);
 	
-	//Scene Rotation
 	glRotatef(sceneRotation[0],1,0,0);
 	glRotatef(sceneRotation[1],0,1,0);
-	
+
 	//Drawing of scene
 	//axis(screenSize[0],screenSize[1], screenSize[0]);
 	drawScene(70);
@@ -768,7 +815,7 @@ int main(int argc, char** argv)
 	glutKeyboardFunc(kbd);
 	glutSpecialFunc(SpecialKeyInput);
 	glutSpecialUpFunc(SpecialUpFunc);
-    glutPassiveMotionFunc(mouseMovement); 
+	glutPassiveMotionFunc(mouseMovement);
 	glutMouseFunc(MouseClick);
 
 	//Enables depth test for proper z buffering
