@@ -66,24 +66,24 @@ std::vector<string> shapeList;
 std::vector<string> materialList;
 
 //Light variables
-float position[4] = {1.5,0,0, 0};
+float position[4] = {0,0,0, 1};
 float amb[4] = {1.0, 1, 1, 1};
-float diff[4] = {1,0,0, 1};
-float spec[4] = {0,0,1, 1};
+float diff[4] = {1,1,1, 1};
+float spec[4] = {1,1,1, 0};
 
 //Material Variables
 
-//Ruby
-float r_amb[] = {0.1745,0.01175,0.01175, 1.0};
-float r_dif[] = {0.61424,0.04136,0.04136, 1.0};
-float r_spec[] = {0.727811,0.626959,0.626959};
-float r_shiny = 0.6;
+//Cyan Plastic
+float cp_amb[] = {0.0,0.1,0.06,1.0};
+float cp_dif[] = {0.0,0.50980392,0.50980392, 1.0};
+float cp_spec[] = {0.50196078,0.50196078,.50196078,1.0};
+float cp_shiny = 0.25;
 
-//Chrome
-float c_amb[] = {0.25,0.25,0.25, 1.0};
-float c_dif[] = {0.4,0.4,0.4, 1.0};
-float c_spec[] = {0.774597,0.774597,0.774597, 1.0};
-float c_shiny = 0.6;
+//Copper
+float c_amb[] = {0.19125,0.0735,0.0225, 1.0};
+float c_dif[] = {0.7038,0.27048,0.0828, 1.0};
+float c_spec[] = {0.256777,0.137622,0.086014, 1.0};
+float c_shiny = 0.1;
 
 //Emerald
 float e_amb[] = {0.0215,0.1745,0.0215, 1.0};
@@ -138,10 +138,10 @@ void drawScene(float size)
 	glBegin(GL_QUADS);
 		glColor3f(0.20,0.80,0.65);
 
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, r_amb);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, r_dif);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, r_spec);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, r_shiny);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, cp_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, cp_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, cp_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, cp_shiny);
 
 		//Left cube face
 		glNormal3d(-1, 0, 0);
@@ -293,11 +293,12 @@ void selectShape(particle p)
 }
 
 
+
 //Functions for alternating materials
 void generateMaterialList()
 {
-	materialList.push_back("ruby");
-	materialList.push_back("chrome");
+	materialList.push_back("cyanplastic");
+	materialList.push_back("copper");
 	materialList.push_back("emerald");
 	materialList.push_back("redplastic");
 	materialList.push_back("whiterubber");
@@ -305,12 +306,12 @@ void generateMaterialList()
 
 void selectMaterial(particle p)
 {
-	if(p.getMaterial()=="ruby"){
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, r_amb);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, r_dif);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, r_spec);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, r_shiny);
-	} else if(p.getMaterial()=="chrome"){
+	if(p.getMaterial()=="cyanplastic"){
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, cp_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, cp_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, cp_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, cp_shiny);
+	} else if(p.getMaterial()=="copper"){
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, c_amb);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, c_dif);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, c_spec);
@@ -363,10 +364,10 @@ void objectDraw()
 		glPopMatrix();
 	}
 
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, w_amb);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, w_dif);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, w_spec);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, w_shiny);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, rp_amb);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, rp_dif);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, rp_spec);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, rp_shiny);
 
 	for(int j=0; j<lightList.size(); j++)
 	{
@@ -744,7 +745,7 @@ void init(void)
 		point3D(1,1,1),
 		vec3D(0,0,0),
 		"sphere",
-		"chrome"
+		"copper"
 		)
 	);
 	lightList.push_back(particle(
@@ -754,7 +755,7 @@ void init(void)
 		point3D(1,1,1),
 		vec3D(0,0,0),
 		"sphere",
-		"chrome"
+		"copper"
 		)
 	);
 
