@@ -21,7 +21,7 @@ using namespace std;
 //Declaring Variables
 
 //Screen size for glut
-int screenSize[2] = {500,500};
+int screenSize[2] = {800,800};
 
 //Initial camera position
 int cameraPos[3] = {300, 300, 300};
@@ -220,6 +220,66 @@ void drawBoundingBox(particle p)
 	
 }
 
+//Rotation of objects
+void rotateObject(string s)
+{
+	if (selectedObjectIndex != -1){
+		if(s == "x"){
+			particleList[selectedObjectIndex].setRotation(vec3D(particleList[selectedObjectIndex].getRotation().x + 0.5,particleList[selectedObjectIndex].getRotation().y,particleList[selectedObjectIndex].getRotation().z));
+		} else if (s=="y"){
+			particleList[selectedObjectIndex].setRotation(vec3D(particleList[selectedObjectIndex].getRotation().x,particleList[selectedObjectIndex].getRotation().y + 0.5,particleList[selectedObjectIndex].getRotation().z));
+		} else if (s=="z"){
+			particleList[selectedObjectIndex].setRotation(vec3D(particleList[selectedObjectIndex].getRotation().x,particleList[selectedObjectIndex].getRotation().y,particleList[selectedObjectIndex].getRotation().z + 0.5));
+		} else if(s == "-x"){
+			particleList[selectedObjectIndex].setRotation(vec3D(particleList[selectedObjectIndex].getRotation().x - 0.5,particleList[selectedObjectIndex].getRotation().y,particleList[selectedObjectIndex].getRotation().z));
+		} else if (s=="-y"){
+			particleList[selectedObjectIndex].setRotation(vec3D(particleList[selectedObjectIndex].getRotation().x,particleList[selectedObjectIndex].getRotation().y - 0.5,particleList[selectedObjectIndex].getRotation().z));
+		} else if (s=="-z"){
+			particleList[selectedObjectIndex].setRotation(vec3D(particleList[selectedObjectIndex].getRotation().x,particleList[selectedObjectIndex].getRotation().y,particleList[selectedObjectIndex].getRotation().z - 0.5));
+		}
+	}
+}
+
+//Translation of objects
+void translateObject(string s)
+{
+	if (selectedObjectIndex != -1){
+		if(s == "x"){
+			particleList[selectedObjectIndex].setPosition(particleList[selectedObjectIndex].getPosition().x + 0.5,particleList[selectedObjectIndex].getPosition().y,particleList[selectedObjectIndex].getPosition().z);
+		} else if (s=="y"){
+			particleList[selectedObjectIndex].setPosition(particleList[selectedObjectIndex].getPosition().x,particleList[selectedObjectIndex].getPosition().y + 0.5,particleList[selectedObjectIndex].getPosition().z);
+		} else if (s=="z"){
+			particleList[selectedObjectIndex].setPosition(particleList[selectedObjectIndex].getPosition().x,particleList[selectedObjectIndex].getPosition().y,particleList[selectedObjectIndex].getPosition().z + 0.5);
+		} else if(s == "-x"){
+			particleList[selectedObjectIndex].setPosition(particleList[selectedObjectIndex].getPosition().x - 0.5,particleList[selectedObjectIndex].getPosition().y,particleList[selectedObjectIndex].getPosition().z);
+		} else if (s=="-y"){
+			particleList[selectedObjectIndex].setPosition(particleList[selectedObjectIndex].getPosition().x,particleList[selectedObjectIndex].getPosition().y - 0.5,particleList[selectedObjectIndex].getPosition().z);
+		} else if (s=="-z"){
+			particleList[selectedObjectIndex].setPosition(particleList[selectedObjectIndex].getPosition().x,particleList[selectedObjectIndex].getPosition().y,particleList[selectedObjectIndex].getPosition().z - 0.5);
+		}
+	}
+}
+
+//Scaling of objects
+void scaleObject(string s)
+{
+	if (selectedObjectIndex != -1){
+		if(s == "x"){
+			particleList[selectedObjectIndex].setScale(particleList[selectedObjectIndex].getScale().x + 0.5,particleList[selectedObjectIndex].getScale().y,particleList[selectedObjectIndex].getScale().z);
+		} else if (s=="y"){
+			particleList[selectedObjectIndex].setScale(particleList[selectedObjectIndex].getScale().x,particleList[selectedObjectIndex].getScale().y + 0.5,particleList[selectedObjectIndex].getScale().z);
+		} else if (s=="z"){
+			particleList[selectedObjectIndex].setScale(particleList[selectedObjectIndex].getScale().x,particleList[selectedObjectIndex].getScale().y,particleList[selectedObjectIndex].getScale().z + 0.5);
+		} else if(s == "-x"){
+			particleList[selectedObjectIndex].setScale(particleList[selectedObjectIndex].getScale().x - 0.5,particleList[selectedObjectIndex].getScale().y,particleList[selectedObjectIndex].getScale().z);
+		} else if (s=="-y"){
+			particleList[selectedObjectIndex].setScale(particleList[selectedObjectIndex].getScale().x,particleList[selectedObjectIndex].getScale().y - 0.5,particleList[selectedObjectIndex].getScale().z);
+		} else if (s=="-z"){
+			particleList[selectedObjectIndex].setScale(particleList[selectedObjectIndex].getScale().x,particleList[selectedObjectIndex].getScale().y,particleList[selectedObjectIndex].getScale().z - 0.5);
+		}
+	}
+}
+
 
 //Creating and Deleting of objects
 void createObject(point3D pos)
@@ -263,6 +323,9 @@ void nextShape()
 	{
 		shapeSelectIndex = 0;
 	}
+	printf("Current shape: ");
+	cout<<shapeList[shapeSelectIndex];
+	printf("\n");
 }
 
 void prevShape()
@@ -272,6 +335,9 @@ void prevShape()
 	{
 		shapeSelectIndex = shapeList.size()-1;
 	}
+	printf("Current shape: ");
+	cout<<shapeList[shapeSelectIndex];
+	printf("\n");
 }
 
 void selectShape(particle p)
@@ -345,21 +411,24 @@ void objectDraw()
 			//set particle position
 			glTranslated(particleList[i].getPosition().x,particleList[i].getPosition().y,particleList[i].getPosition().z);
 			glPushMatrix();
-				//rotate particle and draw
-				/*glRotatef(particleList[i].rot[0],1,0,0);
-				glRotatef(particleList[i].rot[1],0,1,0);
-				glRotatef(particleList[i].rot[2],0,0,1);*/
+				//scale particle
+				glScalef(particleList[i].getScale().x,particleList[i].getScale().y,particleList[i].getScale().z);
+				glPushMatrix();
+					//rotate particle and draw
+					glRotatef(particleList[i].getRotation().x,1,0,0);
+					glRotatef(particleList[i].getRotation().y,0,1,0);
+					glRotatef(particleList[i].getRotation().z,0,0,1);
 
-				//selects the particle material
-				selectMaterial(particleList[i]);
+					//selects the particle material
+					selectMaterial(particleList[i]);
 
-				//shapes and draws the particle
-				selectShape(particleList[i]);
+					//shapes and draws the particle
+					selectShape(particleList[i]);
 
-				if(i == selectedObjectIndex){
-					drawBoundingBox(particleList[i]);
-				}
-
+					if(i == selectedObjectIndex){
+						drawBoundingBox(particleList[i]);
+					}
+				glPopMatrix();
 			glPopMatrix();
 		glPopMatrix();
 	}
@@ -585,6 +654,20 @@ void kbd(unsigned char key, int x, int y)
 		xpos -= float(cos(yrotrad)) * 2;
 		zpos -= float(sin(yrotrad)) * 2;
     }
+
+	//Transformations
+	if (key=='z')
+	{
+		rotateObject("z");
+	}
+	if (key=='x')
+	{
+		rotateObject("x");
+	}
+	if (key=='c')
+	{
+		rotateObject("y");
+	}
 }
 
 //Mouse passive movement
@@ -613,13 +696,9 @@ void MouseClick(int btn, int state, int x, int y)
 	}
 	if(btn == 3 && state == GLUT_DOWN){
 		prevShape();
-		cout<<shapeList[shapeSelectIndex];
-		printf("\n");
 	}
 	if(btn == 4 && state == GLUT_DOWN){
 		nextShape();
-		cout<<shapeList[shapeSelectIndex];
-		printf("\n");
 	}
 }
 

@@ -48,6 +48,12 @@ void particle::setScale(float x, float y, float z)
 	this->pScale.y = y;
 	this->pScale.z = z;
 }
+void particle::setRotation(vec3D rot)
+{
+	this->vRotation.x = rot.x;
+	this->vRotation.y = rot.y;
+	this->vRotation.z = rot.z;
+}
 void particle::setShape(string newShape)
 {
 	this->sShape = newShape;
@@ -56,6 +62,7 @@ void particle::setMaterial(string newMaterial)
 {
 	this->sMaterial = newMaterial;
 }
+
 
 //Get Function
 point3D particle::getPosition()
@@ -73,6 +80,10 @@ int particle::getSize()
 point3D particle::getScale()
 {
 	return this->pScale;
+}
+vec3D particle::getRotation()
+{
+	return this->vRotation;
 }
 string particle::getShape()
 {
