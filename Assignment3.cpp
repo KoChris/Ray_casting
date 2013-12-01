@@ -29,7 +29,6 @@ float lightsource2[4] = {75.0,100.0,150.0,1.0};
 int timer = 0;
 bool keyboard[4];
 bool* keySpecialStates = new bool[256];
-bool lightSource;
 
 float angle = 0;
 
@@ -61,7 +60,14 @@ float e_dif[] = {0.07568,0.61424,0.07568, 1.0};
 float e_spec[] = {0.633,0.727811,0.633, 1.0};
 float e_shiny = 0.6;
 
+//Red Plastic
+float r_amb[] = {0.05,0.0,0.0, 1.0};
+float r_dif[] = {0.5,0.4,0.4, 1.0};
+float r_spec[] = {0.7,0.04,0.04, 1.0};
+float r_shiny = 0.078125;
+
 std::vector<particle> particleList;
+std::vector<particle> lightList;
 
 //Prints manual to console
 void printManual()
@@ -95,10 +101,10 @@ void drawScene(float size)
 	glBegin(GL_QUADS);
 		glColor3f(0.20,0.80,0.65);
 
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, e_amb);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, e_dif);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, e_spec);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, e_shiny);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, r_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, r_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, r_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, r_shiny);
 
 		//Left cube face
 		glNormal3d(-1, 0, 0);
@@ -190,15 +196,37 @@ void kbd(unsigned char key, int x, int y)
 	}
 	if(key == 'f' || key == 'F')
 	{
-		lightSource = !lightSource;
+		
 	}
 	if(key == 'r' || key == 'R')
 	{
 		particle::particleList.clear();
 	}
-	if(key == 32)
-	{
 
+	//Camera1 Controls
+	if(key == 'u' || key == 'U')
+	{
+		lightsource1[0] -= 10;
+	}
+	if(key == 'i' || key == 'I')
+	{
+		lightsource1[0] += 10;
+	}
+	if(key == 'j' || key == 'J')
+	{
+		lightsource1[1] -= 10;
+	}
+	if(key == 'k' || key == 'K')
+	{
+		lightsource1[1] += 10;
+	}
+	if(key == 'n' || key == 'N')
+	{
+		lightsource1[2] -= 10;
+	}
+	if(key == 'm' || key == 'M')
+	{
+		lightsource1[2] += 10;
 	}
 }
 
@@ -312,18 +340,18 @@ void updateParticle(double deltaTime)
 //updating particles
 void update(void)
 {
-	while((lastUpdateTime + CLOCKS_PER_SEC * SECS_PER_TICK < clock()) )//& pauseGame)
+	while((lastUpdateTime + CLOCKS_PER_SEC * SECS_PER_TICK < clock()) )
 	{
 		lastUpdateTime += CLOCKS_PER_SEC*SECS_PER_TICK;
 		updateParticle(SECS_PER_TICK);
 	}
 
-		GLfloat lightpos1[] = {lightsource1[0],lightsource1[1],lightsource1[2],lightsource1[3]};
-		glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
+	//Updates light source position
+	GLfloat lightpos1[] = {lightsource1[0],lightsource1[1],lightsource1[2],lightsource1[3]};
+	glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
 
-
-		GLfloat lightpos2[] = {lightsource2[0],lightsource2[1],lightsource2[2],lightsource2[3]};
-		glLightfv(GL_LIGHT1, GL_POSITION, lightpos2);
+	GLfloat lightpos2[] = {lightsource2[0],lightsource2[1],lightsource2[2],lightsource2[3]};
+	glLightfv(GL_LIGHT1, GL_POSITION, lightpos2);
 
 }
 
@@ -331,7 +359,7 @@ void init(void)
 {
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0); 
-	glEnable(GL_LIGHT1);
+	//glEnable(GL_LIGHT1);
 
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
@@ -392,7 +420,7 @@ int main(int argc, char** argv)
 	glutSpecialUpFunc(SpecialUpFunc);
 	glutMouseFunc(MouseClick);
 
-	glEnable (GL_DEPTH_TEST); // | GL_LIGHTING | GL_LIGHT0);
+	glEnable (GL_DEPTH_TEST); 
 
 	init();
 
