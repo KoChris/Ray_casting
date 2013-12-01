@@ -68,13 +68,13 @@ float r_shiny = 0.078125;
 
 std::vector<particle> particleList;
 std::vector<particle> lightList;
+std::vector<string> shapeList;
 
 void generateShapeList()
 {
 	shapeList.push_back("cube");
 	shapeList.push_back("sphere");
 	shapeList.push_back("cone");
-	shapeList.push_back("cylinder");
 	shapeList.push_back("torus");
 	shapeList.push_back("teapot");
 }
@@ -101,13 +101,14 @@ void selectShape(particle p)
 	} else if (p.getShape()=="sphere"){
 		glutSolidSphere(p.getSize(),30,30);
 	} else if (p.getShape()=="cone"){
-		glutSolidCone(p.getSize(),p.getSize(),30,30);
-	} else if (p.getShape()=="cylinder"){
-		glutSolidCone(p.getSize(),p.getSize(),2,10);
+		glutSolidCone(p.getSize()/2,p.getSize(),30,30);
 	} else if (p.getShape()=="torus"){
 		glutSolidTorus(p.getSize()/2,p.getSize(),10,10);
 	} else if (p.getShape()=="teapot"){
+		glPushMatrix();
+		glRotatef(90,1,0,0);
 		glutSolidTeapot(p.getSize());
+		glPopMatrix();
 	}
 }
 
@@ -181,6 +182,14 @@ void drawScene(float size)
 		glVertex3f(-size, size, size);
 		glVertex3f(-size, size, 0);
 		glVertex3f(-size, -size, 0);
+
+		//Front cube face
+		glNormal3d(0,-1,0);
+		glVertex3f(size,size,size);
+		glVertex3f(-size,size,size);
+		glVertex3f(-size,size,0);
+		glVertex3f(size,size,0);
+
 
 		//Bottom cube face
 		glNormal3d(0, 0, 1);
@@ -262,6 +271,7 @@ point3D fetchLocation(int x, int y){
 
 	return point3D(objX,objY,objZ);
 }
+
 //Handling ASCII keys
 void kbd(unsigned char key, int x, int y)
 {
@@ -276,7 +286,7 @@ void kbd(unsigned char key, int x, int y)
 	}
 	if(key == 'r' || key == 'R')
 	{
-		particle::particleList.clear();
+		particleList.clear();
 	}
 
 	//Camera1 Controls
@@ -372,7 +382,6 @@ void MouseClick(int btn, int state, int x, int y)
 		printf("\n");
 	}
 }
-
 //updates camera
 void updateParticle(double deltaTime)
 {
@@ -460,13 +469,12 @@ void display(void)
 
 	glutSwapBuffers();
 }
-
 /* main function - program entry point */
 int main(int argc, char** argv)
 {
 	printManual();
 	generateShapeList();
-	
+
 	srand(time(0));
 	glutInit(&argc, argv);		//starts up GLUT
 
@@ -485,12 +493,11 @@ int main(int argc, char** argv)
 	glutSpecialUpFunc(SpecialUpFunc);
 	glutMouseFunc(MouseClick);
 
-	
 	//need to fix normals on walls
-	glFrontFace(GL_CCW);
-	glCullFace(GL_BACK);
-	glEnable(GL_CULL_FACE);
-	glEnable (GL_DEPTH_TEST); 
+	//glFrontFace(GL_CCW);
+	//glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	glEnable (GL_DEPTH_TEST);
 
 	init();
 
@@ -501,5 +508,5 @@ int main(int argc, char** argv)
 	glutMainLoop();				//starts the event loop
 
 	return(0);					//return may not be necessary on all compilers
-	
+
 }
