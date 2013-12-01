@@ -19,10 +19,12 @@ Manual
 **Placing objects**
 
 	Spacebar - Place objects
+	
+	Mouse Wheel - Cycle through shapes
 
-	"+" - Cycle through shapes
+	PAGE_UP - Cycle through shapes
 
-	"-" - Cycle through shapes
+	PAGE_DOWN - Cycle through shapes
 
 
 **Material**
@@ -45,6 +47,13 @@ Manual
 	Alt + "<" - Scale down object in z axis
 
 	Alt + ">" - Scale up object in z axis
+	
+
+**Scene Rotation**
+
+	"9" & "0" - Rotate around x axis
+	
+	"-" & "=" - Rotate around y axis 
 
 **Object rotation**
 
