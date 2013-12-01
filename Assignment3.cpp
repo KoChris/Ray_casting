@@ -43,10 +43,6 @@ float lightsourceSize = 5.0;
 //Initial particle size
 int particleSizeDefault = 5;
 
-
-//Timer for update func
-int timer = 0;
-
 //Variables for keyboard
 bool keyboard[4]; //Arrow Keys
 bool* keySpecialStates = new bool[256];
@@ -67,7 +63,6 @@ std::vector<string> shapeList;
 std::vector<string> materialList;
 
 //Light variables
-float position[4] = {0,0,0, 1};
 float amb[4] = {1.0, 1, 1, 1};
 float diff[4] = {1,1,1, 1};
 float spec[4] = {1,1,1, 0};
@@ -141,47 +136,35 @@ void save()
 		saveTo << "\n";
 		saveTo << sceneRotation[1];
 		saveTo << "\n";
+		saveTo << lightsource1[0];
+		saveTo << "\n";
+		saveTo << lightsource2[0];
+		saveTo << "\n";
+		saveTo << lightsource1[1];
+		saveTo << "\n";
+		saveTo << lightsource2[1];
+		saveTo << "\n";
+		saveTo << lightsource1[2];
+		saveTo << "\n";
+		saveTo << lightsource2[2];
+		saveTo << "\n";
+		
 		//continue this for required save variables
+		//bool keyboard[4]; //Arrow Keys
+		//bool* keySpecialStates = new bool[256];
 
+		saveTo << shapeSelectIndex;
+		saveTo << materialSelectIndex;
+		saveTo << selectedObjectIndex;
 
-//float lightsource1[4] = {0.0,0.0,150.0,1.0};
-//float lightsource2[4] = {0,-100.0,110.0,1.0};
-//float lightsourceSize = 5.0;
-//
-////Timer for update func
-//int timer = 0;
-//
-////Variables for keyboard
-//bool keyboard[4]; //Arrow Keys
-//bool* keySpecialStates = new bool[256];
-//
-////Index for different shapes
-//int shapeSelectIndex = 0;
-//
-////Index for different materials
-//int materialSelectIndex = 0;
-//
-////Index for selected object
-//int selectedObjectIndex = -1;
-//
-////Declaring lists
-//std::vector<particle> particleList;
-//std::vector<particle> lightList;
-//
-////Light variables
-//float position[4] = {0,0,0, 1};
-
-
+		//particleList;
 		saveTo.close();
-	} else 
+	}
+	else 
 	{
 		printf("Unable to save to file\n");
 	}
 }
-
-
-
-
 
 //Loads the current scene
 void load()
@@ -191,16 +174,13 @@ void load()
 	getline(cin, file);
 
 	string line;
-		ifstream loadFrom (file);
-
+	ifstream loadFrom (file);
 	if(loadFrom.is_open())
 	{
 		getline(loadFrom,line);
 		
-
-
-
-
+		
+		
 		loadFrom.close();
 	}
 	else
@@ -209,10 +189,9 @@ void load()
 	}
 }
 
-
 //Draws the axis
-void axis(int sizeX, int sizeY, int sizeZ){
-
+void axis(int sizeX, int sizeY, int sizeZ)
+{
 	glBegin(GL_LINES);
 		//y-axis
 		glColor3f(1, 0, 0);
@@ -227,7 +206,6 @@ void axis(int sizeX, int sizeY, int sizeZ){
 		glVertex3f(0, 0, -sizeZ);
 		glVertex3f(0, 0, sizeZ);
 	glEnd();
-
 }
 
 //Draws walls for the room
@@ -240,35 +218,30 @@ void drawScene(float size)
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, cp_dif);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, cp_spec);
 		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, cp_shiny);
-
 		//Left cube face
 		glNormal3d(-1, 0, 0);
 		glVertex3f(size, size, size);
 		glVertex3f(size, -size, size);
 		glVertex3f(size, -size, 0);
 		glVertex3f(size, size, 0);
-
 		//Back cube face
 		glNormal3d(0, 1, 0);
 		glVertex3f(-size, -size, size);
 		glVertex3f(size, -size, size);
 		glVertex3f(size, -size, 0);
 		glVertex3f(-size, -size, 0);
-
 		//Right cube face
 		glNormal3d(1, 0, 0);
 		glVertex3f(-size, -size, size);
 		glVertex3f(-size, size, size);
 		glVertex3f(-size, size, 0);
 		glVertex3f(-size, -size, 0);
-
 		//Front cube face
 		glNormal3d(0,-1,0);
 		glVertex3f(size,size,size);
 		glVertex3f(-size,size,size);
 		glVertex3f(-size,size,0);
 		glVertex3f(size,size,0);
-
 		//Bottom cube face
 		glNormal3d(0, 0, 1);
 		glVertex3f(size, size, 0);
@@ -281,9 +254,12 @@ void drawScene(float size)
 //Selection of objects
 void selectObject(point3D pos)
 {
-	if(!particleList.empty()){
-		for(int i=0; i < particleList.size(); i++){
-			if(Math3DLib::distance(particleList[i].getPosition(),pos)<=particleList[i].getSize()){
+	if(!particleList.empty())
+	{
+		for(int i=0; i < particleList.size(); i++)
+		{
+			if(Math3DLib::distance(particleList[i].getPosition(),pos)<=particleList[i].getSize())
+			{
 				selectedObjectIndex = i;
 				break;
 			}
@@ -301,38 +277,58 @@ void drawBoundingBox(particle p)
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, box_col);
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, box_shine);
 
-	if(p.getShape()=="cube"){
+	if(p.getShape()=="cube")
+	{
 		glutWireCube(p.getSize()+0.5);
-	} else if (p.getShape()=="sphere"){
+	}
+	else if (p.getShape()=="sphere")
+	{
 		glutWireSphere(p.getSize()+0.5,30,30);
-	} else if (p.getShape()=="cone"){
+	}
+	else if (p.getShape()=="cone")
+	{
 		glutWireCone((p.getSize()+0.5)/2,p.getSize()+0.5,30,30);
-	} else if (p.getShape()=="torus"){
+	}
+	else if (p.getShape()=="torus")
+	{
 		glutWireTorus((p.getSize()+0.5)/2,p.getSize()+0.5,10,10);
-	} else if (p.getShape()=="teapot"){
+	}
+	else if (p.getShape()=="teapot")
+	{
 		glPushMatrix();
 		glRotatef(90,1,0,0);
 		glutWireTeapot(p.getSize()+0.5);
 		glPopMatrix();
-	}
-	
+	}	
 }
 
 //Rotation of objects
 void rotateObject(string s)
 {
-	if (selectedObjectIndex != -1){
-		if(s == "x"){
+	if (selectedObjectIndex != -1)
+	{
+		if(s == "x")
+		{
 			particleList[selectedObjectIndex].setRotation(vec3D(particleList[selectedObjectIndex].getRotation().x + 0.5,particleList[selectedObjectIndex].getRotation().y,particleList[selectedObjectIndex].getRotation().z));
-		} else if (s=="y"){
+		}
+		else if (s=="y")
+		{
 			particleList[selectedObjectIndex].setRotation(vec3D(particleList[selectedObjectIndex].getRotation().x,particleList[selectedObjectIndex].getRotation().y + 0.5,particleList[selectedObjectIndex].getRotation().z));
-		} else if (s=="z"){
+		}
+		else if (s=="z")
+		{
 			particleList[selectedObjectIndex].setRotation(vec3D(particleList[selectedObjectIndex].getRotation().x,particleList[selectedObjectIndex].getRotation().y,particleList[selectedObjectIndex].getRotation().z + 0.5));
-		} else if(s == "-x"){
+		}
+		else if(s == "-x")
+		{
 			particleList[selectedObjectIndex].setRotation(vec3D(particleList[selectedObjectIndex].getRotation().x - 0.5,particleList[selectedObjectIndex].getRotation().y,particleList[selectedObjectIndex].getRotation().z));
-		} else if (s=="-y"){
+		}
+		else if (s=="-y")
+		{
 			particleList[selectedObjectIndex].setRotation(vec3D(particleList[selectedObjectIndex].getRotation().x,particleList[selectedObjectIndex].getRotation().y - 0.5,particleList[selectedObjectIndex].getRotation().z));
-		} else if (s=="-z"){
+		}
+		else if (s=="-z")
+		{
 			particleList[selectedObjectIndex].setRotation(vec3D(particleList[selectedObjectIndex].getRotation().x,particleList[selectedObjectIndex].getRotation().y,particleList[selectedObjectIndex].getRotation().z - 0.5));
 		}
 	}
@@ -341,18 +337,30 @@ void rotateObject(string s)
 //Translation of objects
 void translateObject(string s)
 {
-	if (selectedObjectIndex != -1){
-		if(s == "x"){
+	if (selectedObjectIndex != -1)
+	{
+		if(s == "x")
+		{
 			particleList[selectedObjectIndex].setPosition(particleList[selectedObjectIndex].getPosition().x + 0.5,particleList[selectedObjectIndex].getPosition().y,particleList[selectedObjectIndex].getPosition().z);
-		} else if (s=="y"){
+		}
+		else if (s=="y")
+		{
 			particleList[selectedObjectIndex].setPosition(particleList[selectedObjectIndex].getPosition().x,particleList[selectedObjectIndex].getPosition().y + 0.5,particleList[selectedObjectIndex].getPosition().z);
-		} else if (s=="z"){
+		}
+		else if (s=="z")
+		{
 			particleList[selectedObjectIndex].setPosition(particleList[selectedObjectIndex].getPosition().x,particleList[selectedObjectIndex].getPosition().y,particleList[selectedObjectIndex].getPosition().z + 0.5);
-		} else if(s == "-x"){
+		} 
+		else if(s == "-x")
+		{
 			particleList[selectedObjectIndex].setPosition(particleList[selectedObjectIndex].getPosition().x - 0.5,particleList[selectedObjectIndex].getPosition().y,particleList[selectedObjectIndex].getPosition().z);
-		} else if (s=="-y"){
+		}
+		else if (s=="-y")
+		{
 			particleList[selectedObjectIndex].setPosition(particleList[selectedObjectIndex].getPosition().x,particleList[selectedObjectIndex].getPosition().y - 0.5,particleList[selectedObjectIndex].getPosition().z);
-		} else if (s=="-z"){
+		} 
+		else if (s=="-z")
+		{
 			particleList[selectedObjectIndex].setPosition(particleList[selectedObjectIndex].getPosition().x,particleList[selectedObjectIndex].getPosition().y,particleList[selectedObjectIndex].getPosition().z - 0.5);
 		}
 	}
@@ -361,23 +369,34 @@ void translateObject(string s)
 //Scaling of objects
 void scaleObject(string s)
 {
-	if (selectedObjectIndex != -1){
-		if(s == "x"){
+	if (selectedObjectIndex != -1)
+	{
+		if(s == "x")
+		{
 			particleList[selectedObjectIndex].setScale(particleList[selectedObjectIndex].getScale().x + 0.5,particleList[selectedObjectIndex].getScale().y,particleList[selectedObjectIndex].getScale().z);
-		} else if (s=="y"){
+		} 
+		else if (s=="y")
+		{
 			particleList[selectedObjectIndex].setScale(particleList[selectedObjectIndex].getScale().x,particleList[selectedObjectIndex].getScale().y + 0.5,particleList[selectedObjectIndex].getScale().z);
-		} else if (s=="z"){
+		}
+		else if (s=="z")
+		{
 			particleList[selectedObjectIndex].setScale(particleList[selectedObjectIndex].getScale().x,particleList[selectedObjectIndex].getScale().y,particleList[selectedObjectIndex].getScale().z + 0.5);
-		} else if(s == "-x"){
+		}
+		else if(s == "-x")
+		{
 			particleList[selectedObjectIndex].setScale(particleList[selectedObjectIndex].getScale().x - 0.5,particleList[selectedObjectIndex].getScale().y,particleList[selectedObjectIndex].getScale().z);
-		} else if (s=="-y"){
+		}
+		else if (s=="-y")
+		{
 			particleList[selectedObjectIndex].setScale(particleList[selectedObjectIndex].getScale().x,particleList[selectedObjectIndex].getScale().y - 0.5,particleList[selectedObjectIndex].getScale().z);
-		} else if (s=="-z"){
+		}
+		else if (s=="-z")
+		{
 			particleList[selectedObjectIndex].setScale(particleList[selectedObjectIndex].getScale().x,particleList[selectedObjectIndex].getScale().y,particleList[selectedObjectIndex].getScale().z - 0.5);
 		}
 	}
 }
-
 
 //Creating and Deleting of objects
 void createObject(point3D pos)
@@ -387,9 +406,12 @@ void createObject(point3D pos)
 
 void deleteObject(point3D pos)
 {
-	if(!particleList.empty()){
-		for(int i=0; i < particleList.size(); i++){
-			if(Math3DLib::distance(particleList[i].getPosition(),pos)<=particleList[i].getSize()){
+	if(!particleList.empty())
+	{
+		for(int i=0; i < particleList.size(); i++)
+		{
+			if(Math3DLib::distance(particleList[i].getPosition(),pos)<=particleList[i].getSize())
+			{
 				particleList.erase(particleList.begin()+i);
 				if(i = selectedObjectIndex)
 				{
@@ -405,9 +427,12 @@ void deleteObject(point3D pos)
 //Modifying object material
 void modifyObjectMaterial(point3D pos)
 {
-		if(!particleList.empty()){
-		for(int i=0; i < particleList.size(); i++){
-			if(Math3DLib::distance(particleList[i].getPosition(),pos)<=particleList[i].getSize()){
+		if(!particleList.empty())
+		{
+		for(int i=0; i < particleList.size(); i++)
+		{
+			if(Math3DLib::distance(particleList[i].getPosition(),pos)<=particleList[i].getSize())
+			{
 				particleList[i].setMaterial(materialList[materialSelectIndex]);
 				break;
 			}
@@ -452,23 +477,30 @@ void prevShape()
 
 void selectShape(particle p)
 {
-	if(p.getShape()=="cube"){
+	if(p.getShape()=="cube")
+	{
 		glutSolidCube(p.getSize());
-	} else if (p.getShape()=="sphere"){
+	}
+	else if (p.getShape()=="sphere")
+	{
 		glutSolidSphere(p.getSize(),30,30);
-	} else if (p.getShape()=="cone"){
+	}
+	else if (p.getShape()=="cone")
+	{
 		glutSolidCone(p.getSize()/2,p.getSize(),30,30);
-	} else if (p.getShape()=="torus"){
+	}
+	else if (p.getShape()=="torus")
+	{
 		glutSolidTorus(p.getSize()/2,p.getSize(),10,10);
-	} else if (p.getShape()=="teapot"){
+	}
+	else if (p.getShape()=="teapot")
+	{
 		glPushMatrix();
 		glRotatef(90,1,0,0);
 		glutSolidTeapot(p.getSize());
 		glPopMatrix();
 	}
 }
-
-
 
 //Functions for alternating materials
 void generateMaterialList()
@@ -482,35 +514,42 @@ void generateMaterialList()
 
 void selectMaterial(particle p)
 {
-	if(p.getMaterial()=="cyanplastic"){
+	if(p.getMaterial()=="cyanplastic")
+	{
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, cp_amb);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, cp_dif);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, cp_spec);
 		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, cp_shiny);
-	} else if(p.getMaterial()=="copper"){
+	}
+	else if(p.getMaterial()=="copper")
+	{
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, c_amb);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, c_dif);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, c_spec);
 		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, c_shiny);
-	} else if(p.getMaterial()=="emerald"){
+	}
+	else if(p.getMaterial()=="emerald")
+	{
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, e_amb);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, e_dif);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, e_spec);
 		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, e_shiny);
-	} else if(p.getMaterial()=="redplastic"){
+	}
+	else if(p.getMaterial()=="redplastic")
+	{
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, rp_amb);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, rp_dif);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, rp_spec);
 		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, rp_shiny);
-	} else if(p.getMaterial()=="whiterubber"){
+	}
+	else if(p.getMaterial()=="whiterubber")
+	{
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, w_amb);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, w_dif);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, w_spec);
 		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, w_shiny);
 	}
 }
-
-
 
 //Drawing objects
 void objectDraw()
@@ -559,10 +598,9 @@ void objectDraw()
 	glutPostRedisplay();
 }
 
-
-
 //Ray-casting to fetch 3D location from 2D coordinates
-point3D fetchLocation(int x, int y){
+point3D fetchLocation(int x, int y)
+{
 	GLint viewport[4];
 	GLdouble modelview[16];
 	GLdouble projection[16];
@@ -581,8 +619,6 @@ point3D fetchLocation(int x, int y){
 
 	return point3D(objX,objY,objZ);
 }
-
-
 
 //Handling keyboard input
 void kbd(unsigned char key, int x, int y)
@@ -675,8 +711,6 @@ void kbd(unsigned char key, int x, int y)
 			lightsource1[2] += 10;
 		}
 	}
-
-
 
 	//Placing blocks
 	if(key==' ')
@@ -818,8 +852,6 @@ void MouseClick(int btn, int state, int x, int y)
 	}
 }
 
-
-
 //Handles camera movement inputs
 void SpecialKeyInput(int key, int x, int y)
 {
@@ -868,7 +900,6 @@ void SpecialUpFunc(int key, int x, int y)
 		keyboard[3] = false;
 	}
 }
-
 
 //updates camera position
 void updateCamera(double deltaTime)
@@ -919,7 +950,8 @@ void update(void)
 
 }
 
-void camera (void) {
+void camera (void)
+{
     glRotatef(xrot,1.0,0.0,0.0);  //rotate our camera on teh x-axis (left and right)
     glRotatef(yrot,0.0,1.0,0.0);  //rotate our camera on the y-axis (up and down)
     glTranslated(-xpos,-ypos,-zpos); //translate the screento the position of our camera
@@ -954,7 +986,6 @@ void init(void)
 		)
 	);
 
-
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, spec);
@@ -965,8 +996,6 @@ void init(void)
 
 	glShadeModel(GL_SMOOTH);
 }
-
-
 
 //Main display function
 void display(void)
@@ -1056,5 +1085,4 @@ int main(int argc, char** argv)
 
 	//because why not
 	return(0);
-
 }
