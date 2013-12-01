@@ -29,6 +29,7 @@ float cameraAngle = 0;
 
 float xpos = 0, ypos = 0, zpos = 0, xrot = 0, yrot = 0, angle=0.0;
 float lastx, lasty;
+bool mouseActive;
 
 //Scene Rotation angle
 float sceneRotation[2];
@@ -534,6 +535,12 @@ void kbd(unsigned char key, int x, int y)
 	{
 		sceneRotation[1] -= 1;
 	}
+
+	if(key == '`')
+	{
+		mouseActive = !mouseActive;
+	}
+
 	//Camera movement
 	    if (key=='w')
     {
@@ -575,14 +582,16 @@ void kbd(unsigned char key, int x, int y)
 //Mouse passive movement
 void mouseMovement(int x, int y) 
 {
-    int diffx=x-lastx; //check the difference between the current x and the last x position
-    int diffy=y-lasty; //check the difference between the current y and the last y position
-    lastx=x; //set lastx to the current x position
-    lasty=y; //set lasty to the current y position
-    xrot += (float) diffy; //set the xrot to xrot with the addition of the difference in the y position
-    yrot += (float) diffx;    //set the xrot to yrot with the addition of the difference in the x position
+	if(mouseActive)
+	{
+		int diffx=x-lastx; //check the difference between the current x and the last x position
+		int diffy=y-lasty; //check the difference between the current y and the last y position
+		lastx=x; //set lastx to the current x position
+		lasty=y; //set lasty to the current y position
+		xrot += (float) diffy; //set the xrot to xrot with the addition of the difference in the y position
+		yrot += (float) diffx;    //set the xrot to yrot with the addition of the difference in the x position
+	}
 }
-
 
 //Mouse controls
 void MouseClick(int btn, int state, int x, int y)
