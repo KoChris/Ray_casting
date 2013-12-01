@@ -12,35 +12,47 @@
 #include "Particle.h"
 #include "TrigLib.h"
 
-
+//Time declaration for update func
 #define SECS_PER_TICK 0.0083
 clock_t lastUpdateTime;
 
 using namespace std;
 
 //Declaring Variables
+
+//Screen size for glut
 int screenSize[2] = {500,500};
+
+//Initial camera position
 int cameraPos[3] = {150, 150, 150};
-int startPos[3] = {0,0,0};
-int shapeSelectIndex = 0;
-float lightsource1[4] = {-75.0,100.0,150.0,1.0};
+float cameraAngle = 0;
+
+//Initial light source postition
+float lightsource1[4] = {0.0,0.0,150.0,1.0};
 float lightsource2[4] = {75.0,100.0,150.0,1.0};
 
+//Timer for update func
 int timer = 0;
-bool keyboard[4];
+
+//Variables for keyboard
+bool keyboard[4]; //Arrow Keys
 bool* keySpecialStates = new bool[256];
 
-float angle = 0;
+//Index for different shapes
+int shapeSelectIndex = 0;
 
+//Declaring lists
+std::vector<particle> particleList;
+std::vector<particle> lightList;
+std::vector<string> shapeList;
+
+//Light variables
 float position[4] = {1.5,0,0, 0};
 float amb[4] = {1.0, 1, 1, 1};
 float diff[4] = {1,0,0, 1};
 float spec[4] = {0,0,1, 1};
 
-float Wpos[4] = {2, 2, 2, 1};
-float Wamb[4] = {1, 1, 1, 1};
-float Wdif[4] = {1, 0, 0, 1};
-float Wspc[4] = {0, 0, 1, 1};
+//Material Variables
 
 //Ruby
 float m_amb[] = {0.1745,0.01175,0.01175, 1.0};
@@ -66,70 +78,13 @@ float r_dif[] = {0.5,0.4,0.4, 1.0};
 float r_spec[] = {0.7,0.04,0.04, 1.0};
 float r_shiny = 0.078125;
 
-std::vector<particle> particleList;
-std::vector<particle> lightList;
-std::vector<string> shapeList;
-
-void generateShapeList()
-{
-	shapeList.push_back("cube");
-	shapeList.push_back("sphere");
-	shapeList.push_back("cone");
-	shapeList.push_back("torus");
-	shapeList.push_back("teapot");
-}
-void nextShape()
-{
-	shapeSelectIndex++;
-	if(shapeSelectIndex>shapeList.size()-1)
-	{
-		shapeSelectIndex = 0;
-	}
-}
-void prevShape()
-{
-	shapeSelectIndex--;
-	if(shapeSelectIndex<0)
-	{
-		shapeSelectIndex = shapeList.size()-1;
-	}
-}
-void selectShape(particle p)
-{
-	if(p.getShape()=="cube"){
-		glutSolidCube(p.getSize());
-	} else if (p.getShape()=="sphere"){
-		glutSolidSphere(p.getSize(),30,30);
-	} else if (p.getShape()=="cone"){
-		glutSolidCone(p.getSize()/2,p.getSize(),30,30);
-	} else if (p.getShape()=="torus"){
-		glutSolidTorus(p.getSize()/2,p.getSize(),10,10);
-	} else if (p.getShape()=="teapot"){
-		glPushMatrix();
-		glRotatef(90,1,0,0);
-		glutSolidTeapot(p.getSize());
-		glPopMatrix();
-	}
-}
-
-void deleteObject(point3D pos)
-{
-	if(!particleList.empty()){
-		for(int i=0; i < particleList.size(); i++){
-			if(Math3DLib::distance(particleList[i].getPosition(),pos)<=particleList[i].getSize()){
-				particleList.erase(particleList.begin()+i);
-				break;
-			}
-		}
-		glutPostRedisplay();
-	}
-}
-
 //Prints manual to console
 void printManual()
 {
 
 }
+
+
 
 //Draws the axis
 void axis(int sizeX, int sizeY, int sizeZ){
@@ -190,7 +145,6 @@ void drawScene(float size)
 		glVertex3f(-size,size,0);
 		glVertex3f(size,size,0);
 
-
 		//Bottom cube face
 		glNormal3d(0, 0, 1);
 		glVertex3f(size, size, 0);
@@ -200,20 +154,83 @@ void drawScene(float size)
 	glEnd();
 }
 
-//Draws the floor at the x-y plane
-void floor(int x, int z)
-{
-	glBegin(GL_QUADS);
-		glColor3f(0.65,0.65,0.65);
 
-		glNormal3d(0, 0, -1);
-		glVertex3f(x, x, z);
-		glVertex3f(-x,x,z);
-		glVertex3f(-x,-x,z);
-		glVertex3f(x,-x,z);
-	glEnd();
+
+//Creating and Delting of objects
+void createObject(point3D pos)
+{
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, b_amb);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, b_dif);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, b_spec);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, b_shiny);
+
+	particleList.push_back(particle(pos,colour(180,120,240),5,point3D(1,1,1),vec3D(0,0,0),shapeList[shapeSelectIndex]));
 }
 
+void deleteObject(point3D pos)
+{
+	if(!particleList.empty()){
+		for(int i=0; i < particleList.size(); i++){
+			if(Math3DLib::distance(particleList[i].getPosition(),pos)<=particleList[i].getSize()){
+				particleList.erase(particleList.begin()+i);
+				break;
+			}
+		}
+		glutPostRedisplay();
+	}
+}
+
+
+
+//Functions for alternating shapes
+void generateShapeList()
+{
+	shapeList.push_back("cube");
+	shapeList.push_back("sphere");
+	shapeList.push_back("cone");
+	shapeList.push_back("torus");
+	shapeList.push_back("teapot");
+}
+
+void nextShape()
+{
+	shapeSelectIndex++;
+	if(shapeSelectIndex>shapeList.size()-1)
+	{
+		shapeSelectIndex = 0;
+	}
+}
+
+void prevShape()
+{
+	shapeSelectIndex--;
+	if(shapeSelectIndex<0)
+	{
+		shapeSelectIndex = shapeList.size()-1;
+	}
+}
+
+void selectShape(particle p)
+{
+	if(p.getShape()=="cube"){
+		glutSolidCube(p.getSize());
+	} else if (p.getShape()=="sphere"){
+		glutSolidSphere(p.getSize(),30,30);
+	} else if (p.getShape()=="cone"){
+		glutSolidCone(p.getSize()/2,p.getSize(),30,30);
+	} else if (p.getShape()=="torus"){
+		glutSolidTorus(p.getSize()/2,p.getSize(),10,10);
+	} else if (p.getShape()=="teapot"){
+		glPushMatrix();
+		glRotatef(90,1,0,0);
+		glutSolidTeapot(p.getSize());
+		glPopMatrix();
+	}
+}
+
+
+
+//Drawing objects
 void objectDraw()
 {
 	for(int i=0; i<particleList.size(); i++)
@@ -242,16 +259,9 @@ void objectDraw()
 	glutPostRedisplay();
 }
 
-void createObject(point3D pos)
-{
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, b_amb);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, b_dif);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, b_spec);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, b_shiny);
 
-	particleList.push_back(particle(pos,colour(180,120,240),5,point3D(1,1,1),vec3D(0,0,0),shapeList[shapeSelectIndex]));
-}
 
+//Ray-casting to fetch 3D location from 2D coordinates
 point3D fetchLocation(int x, int y){
 	GLint viewport[4];
 	GLdouble modelview[16];
@@ -272,7 +282,9 @@ point3D fetchLocation(int x, int y){
 	return point3D(objX,objY,objZ);
 }
 
-//Handling ASCII keys
+
+
+//Handling keyboard input
 void kbd(unsigned char key, int x, int y)
 {
 	//if the "q" key is pressed, quit the program
@@ -314,13 +326,39 @@ void kbd(unsigned char key, int x, int y)
 	{
 		lightsource1[2] += 10;
 	}
+
+	//Placing blocks
 	if(key==' ')
 	{
 		createObject(fetchLocation(x, y));
 	}
 }
 
-//Camera movement
+//Mouse controls
+void MouseClick(int btn, int state, int x, int y)
+{
+	if(btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+	{
+
+	}
+	if(btn == GLUT_RIGHT_BUTTON && state == GLUT_DOWN){
+		deleteObject(fetchLocation(x, y));
+	}
+	if(btn == 3 && state == GLUT_DOWN){
+		prevShape();
+		cout<<shapeList[shapeSelectIndex];
+		printf("\n");
+	}
+	if(btn == 4 && state == GLUT_DOWN){
+		nextShape();
+		cout<<shapeList[shapeSelectIndex];
+		printf("\n");
+	}
+}
+
+
+
+//Handles camera movement inputs
 void SpecialKeyInput(int key, int x, int y)
 {
 	if(key == GLUT_KEY_LEFT)
@@ -362,37 +400,18 @@ void SpecialUpFunc(int key, int x, int y)
 	}
 }
 
-void MouseClick(int btn, int state, int x, int y)
-{
-	if(btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-	{
 
-	}
-	if(btn == GLUT_RIGHT_BUTTON && state == GLUT_DOWN){
-		deleteObject(fetchLocation(x, y));
-	}
-	if(btn == 3 && state == GLUT_DOWN){
-		prevShape();
-		cout<<shapeList[shapeSelectIndex];
-		printf("\n");
-	}
-	if(btn == 4 && state == GLUT_DOWN){
-		nextShape();
-		cout<<shapeList[shapeSelectIndex];
-		printf("\n");
-	}
-}
-//updates camera
-void updateParticle(double deltaTime)
+//updates camera position
+void updateCamera(double deltaTime)
 {
 	//Camera Angles
 	if(keyboard[0])
 	{
-		angle+=0.5;
+		cameraAngle+=0.5;
 	}
 	else if(keyboard[1])
 	{
-		angle-=0.5;
+		cameraAngle-=0.5;
 	}
 	else if(keyboard[2])
 	{
@@ -410,13 +429,13 @@ void updateParticle(double deltaTime)
 	glutPostRedisplay();
 }
 
-//updating particles
+//Idle function - updates camera & lighting
 void update(void)
 {
 	while((lastUpdateTime + CLOCKS_PER_SEC * SECS_PER_TICK < clock()) )
 	{
 		lastUpdateTime += CLOCKS_PER_SEC*SECS_PER_TICK;
-		updateParticle(SECS_PER_TICK);
+		updateCamera(SECS_PER_TICK);
 	}
 
 	//Updates light source position
@@ -428,6 +447,9 @@ void update(void)
 
 }
 
+
+
+//Initial function - Initializes lighting
 void init(void)
 {
 	glEnable(GL_LIGHTING);
@@ -445,68 +467,86 @@ void init(void)
 	glShadeModel(GL_SMOOTH);
 }
 
+
+
 //Main display function
 void display(void)
 {
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); //Clear the colour buffer (more buffers later on)
+	//Clear the buffers and clears glMatrix
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	glLoadIdentity(); // Load the Identity Matrix to reset our drawing locations
 	
+	//Sets up projection view
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective (60.0, 1, 0.1, 500.0);
-
 	glMatrixMode(GL_MODELVIEW);
 
-	gluLookAt(cameraPos[0]*sind(angle), cameraPos[1]*cosd(angle),cameraPos[2],0,0,0,0,0,1);
+	//Camera location & viewing
+	gluLookAt(cameraPos[0]*sind(cameraAngle), cameraPos[1]*cosd(cameraAngle),cameraPos[2],0,0,0,0,0,1);
 	
-	//Drawing the scene
+	//Drawing of scene
 	axis(screenSize[0],screenSize[1], screenSize[0]);
-	//floor(70, 0);
 	drawScene(70);
 
+	//Drawing of the objects
 	objectDraw();
 
+	//Double buffering
 	glutSwapBuffers();
 }
-/* main function - program entry point */
+
+//Main function - Program entry point
 int main(int argc, char** argv)
 {
+	//Prints manual to console
 	printManual();
-	generateShapeList();
 
+	//Needed for rand() to work
 	srand(time(0));
-	glutInit(&argc, argv);		//starts up GLUT
 
+	//Initialize GLUT
+	glutInit(&argc, argv);
+
+	//Declaring buffers
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 
+	//Initializing screen & creates window
 	glutInitWindowSize(screenSize[0], screenSize[1]);
 	glutInitWindowPosition(100, 100);
-
 	glutCreateWindow("Simpler Modeller");
 
+	//Clearing screen
 	glClearColor(0, 0, 0, 0);
-
+	
+	//Handles inputs
 	glutKeyboardFunc(kbd);
-	//glutKeyboardUpFunc(keyUp);
 	glutSpecialFunc(SpecialKeyInput);
 	glutSpecialUpFunc(SpecialUpFunc);
 	glutMouseFunc(MouseClick);
 
-	//need to fix normals on walls
+	//Enables depth test for proper z buffering
+	glEnable (GL_DEPTH_TEST);
+
+	////Enables backculling
 	//glFrontFace(GL_CCW);
 	//glCullFace(GL_BACK);
 	//glEnable(GL_CULL_FACE);
-	glEnable (GL_DEPTH_TEST);
 
+	//init to initialize lighting
 	init();
 
+	//Initialize shapelist
+	generateShapeList();
+
+	//Registers display callback func & idle callback func
 	glutDisplayFunc(display);	//registers "display" as the display callback function
 	glutIdleFunc(update);
 
-	//Starts program
-	glutMainLoop();				//starts the event loop
+	//Starts event loop
+	glutMainLoop();
 
-	return(0);					//return may not be necessary on all compilers
+	//because why not
+	return(0);
 
 }
