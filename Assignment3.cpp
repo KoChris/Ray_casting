@@ -27,6 +27,9 @@ int screenSize[2] = {500,500};
 int cameraPos[3] = {150, 150, 150};
 float cameraAngle = 0;
 
+//Scene Rotation angle
+float sceneRotation[2];
+
 //Initial light source variable
 float lightsource1[4] = {0.0,0.0,150.0,1.0};
 float lightsource2[4] = {0,-100.0,110.0,1.0};
@@ -458,6 +461,23 @@ void kbd(unsigned char key, int x, int y)
 	{
 		materialSelectIndex=4;
 	}
+
+	if(key == '9')
+	{
+		sceneRotation[0] += 1;
+	}
+	if(key == '0')
+	{
+		sceneRotation[0] -= 1;
+	}
+	if(key == '-')
+	{
+		sceneRotation[1] += 1;
+	}
+	if(key == '=')
+	{
+		sceneRotation[1] -= 1;
+	}
 }
 
 //Mouse controls
@@ -639,6 +659,8 @@ void display(void)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective (60.0, 1, 0.1, 500.0);
+	glRotatef(sceneRotation[0],1,0,0);
+	glRotatef(sceneRotation[1],0,1,0);
 	glMatrixMode(GL_MODELVIEW);
 
 	//Camera location & viewing
