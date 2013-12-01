@@ -263,9 +263,10 @@ void objectDraw()
 	{
 		glPushMatrix();	
 		glTranslatef(lightList[j].getPosition().x,lightList[j].getPosition().y,lightList[j].getPosition().z);
-		glutSolidSphere(10,8,8);
+		glutSolidSphere(7,8,8);
 		glPopMatrix();
 	}
+
 	glutPostRedisplay();
 }
 
@@ -485,7 +486,7 @@ void updateCamera(double deltaTime)
 	{
 		cameraPos[2] -= 0.05;
 	}
-
+	
 	glutPostRedisplay();
 }
 
@@ -504,6 +505,9 @@ void update(void)
 
 	GLfloat lightpos2[] = {lightsource2[0],lightsource2[1],lightsource2[2],lightsource2[3]};
 	glLightfv(GL_LIGHT1, GL_POSITION, lightpos2);
+
+	lightList[0].setPosition(lightsource1[0],lightsource1[1],lightsource1[2]);
+	lightList[1].setPosition(lightsource2[0],lightsource2[1],lightsource2[2]);
 
 }
 
@@ -608,10 +612,10 @@ int main(int argc, char** argv)
 	//Enables depth test for proper z buffering
 	glEnable (GL_DEPTH_TEST);
 
-	////Enables backculling
-	//glFrontFace(GL_CCW);
-	//glCullFace(GL_BACK);
-	//glEnable(GL_CULL_FACE);
+	//Enables backculling
+	glFrontFace(GL_CCW);
+	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
 
 	//init to initialize lighting
 	init();
