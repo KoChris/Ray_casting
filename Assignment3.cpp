@@ -27,9 +27,11 @@ int screenSize[2] = {500,500};
 int cameraPos[3] = {150, 150, 150};
 float cameraAngle = 0;
 
-//Initial light source postition
+//Initial light source variable
 float lightsource1[4] = {0.0,0.0,150.0,1.0};
-float lightsource2[4] = {75.0,100.0,150.0,1.0};
+float lightsource2[4] = {0,-100.0,110.0,1.0};
+float lightsourceSize = 5.0;
+
 
 //Timer for update func
 int timer = 0;
@@ -256,6 +258,14 @@ void objectDraw()
 		glPopMatrix();
 		glPopMatrix();
 	}
+
+	for(int j=0; j<lightList.size(); j++)
+	{
+		glPushMatrix();	
+		glTranslatef(lightList[j].getPosition().x,lightList[j].getPosition().y,lightList[j].getPosition().z);
+		glutSolidSphere(10,8,8);
+		glPopMatrix();
+	}
 	glutPostRedisplay();
 }
 
@@ -301,31 +311,81 @@ void kbd(unsigned char key, int x, int y)
 		particleList.clear();
 	}
 
-	//Camera1 Controls
+	//Light source Controls  **CTRL handles light source 1
 	if(key == 'u' || key == 'U')
 	{
-		lightsource1[0] -= 10;
+		int mod = glutGetModifiers();
+		if (mod == GLUT_ACTIVE_CTRL)
+		{
+			lightsource2[0] -= 10;
+		}
+		else
+		{
+			lightsource1[0] -= 10;
+		}
 	}
 	if(key == 'i' || key == 'I')
 	{
-		lightsource1[0] += 10;
+		int mod = glutGetModifiers();
+		if (mod == GLUT_ACTIVE_CTRL)
+		{
+			lightsource2[0] += 10;
+		}
+		else
+		{
+			lightsource1[0] += 10;
+		}
 	}
 	if(key == 'j' || key == 'J')
 	{
-		lightsource1[1] -= 10;
+		int mod = glutGetModifiers();
+		if (mod == GLUT_ACTIVE_CTRL)
+		{
+			lightsource2[1] -= 10;
+		}
+		else
+		{
+			lightsource1[1] -= 10;
+		}
 	}
 	if(key == 'k' || key == 'K')
 	{
-		lightsource1[1] += 10;
+		int mod = glutGetModifiers();
+		if (mod == GLUT_ACTIVE_CTRL)
+		{
+			lightsource2[1] += 10;
+		}
+		else
+		{
+			lightsource1[1] += 10;
+		}
 	}
 	if(key == 'n' || key == 'N')
 	{
-		lightsource1[2] -= 10;
+		int mod = glutGetModifiers();
+		if (mod == GLUT_ACTIVE_CTRL)
+		{
+			lightsource2[2] -= 10;
+		}
+		else
+		{
+			lightsource1[2] -= 10;
+		}
 	}
 	if(key == 'm' || key == 'M')
 	{
-		lightsource1[2] += 10;
+		int mod = glutGetModifiers();
+		if (mod == GLUT_ACTIVE_CTRL)
+		{
+			lightsource2[2] += 10;
+		}
+		else
+		{
+			lightsource1[2] += 10;
+		}
 	}
+
+
 
 	//Placing blocks
 	if(key==' ')
@@ -455,6 +515,26 @@ void init(void)
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0); 
 	//glEnable(GL_LIGHT1);
+
+	//Adding lights to light list
+	lightList.push_back(particle(
+		point3D(lightsource1[0],lightsource1[1],lightsource1[2]),
+		colour(1.0,1.0,1.0),
+		lightsourceSize,
+		point3D(1,1,1),
+		vec3D(0,0,0),
+		"sphere"
+		)
+	);
+	lightList.push_back(particle(
+		point3D(lightsource2[0],lightsource2[1],lightsource2[2]),
+		colour(1.0,1.0,1.0),
+		lightsourceSize,
+		point3D(1,1,1),
+		vec3D(0,0,0),
+		"sphere")
+	);
+
 
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
