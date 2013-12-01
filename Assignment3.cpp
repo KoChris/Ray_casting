@@ -61,16 +61,16 @@ float spec[4] = {0,0,1, 1};
 //Material Variables
 
 //Ruby
-float m_amb[] = {0.1745,0.01175,0.01175, 1.0};
-float m_dif[] = {0.61424,0.04136,0.04136, 1.0};
-float m_spec[] = {0.727811,0.626959,0.626959};
-float shiny = 0.6;
+float r_amb[] = {0.1745,0.01175,0.01175, 1.0};
+float r_dif[] = {0.61424,0.04136,0.04136, 1.0};
+float r_spec[] = {0.727811,0.626959,0.626959};
+float r_shiny = 0.6;
 
 //Chrome
-float b_amb[] = {0.25,0.25,0.25, 1.0};
-float b_dif[] = {0.4,0.4,0.4, 1.0};
-float b_spec[] = {0.774597,0.774597,0.774597, 1.0};
-float b_shiny = 0.6;
+float c_amb[] = {0.25,0.25,0.25, 1.0};
+float c_dif[] = {0.4,0.4,0.4, 1.0};
+float c_spec[] = {0.774597,0.774597,0.774597, 1.0};
+float c_shiny = 0.6;
 
 //Emerald
 float e_amb[] = {0.0215,0.1745,0.0215, 1.0};
@@ -79,10 +79,17 @@ float e_spec[] = {0.633,0.727811,0.633, 1.0};
 float e_shiny = 0.6;
 
 //Red Plastic
-float r_amb[] = {0.05,0.0,0.0, 1.0};
-float r_dif[] = {0.5,0.4,0.4, 1.0};
-float r_spec[] = {0.7,0.04,0.04, 1.0};
-float r_shiny = 0.078125;
+float rp_amb[] = {0.0,0.0,0.0, 1.0};
+float rp_dif[] = {0.5,0.0,0.0, 1.0};
+float rp_spec[] = {0.7,0.6,0.6, 1.0};
+float rp_shiny = 0.25;
+
+//White Rubber
+float w_amb[] = {0.05,0.05,0.05, 1.0};
+float w_dif[] = {0.5,0.5,0.5, 1.0};
+float w_spec[] = {0.7,0.7,0.7, 1.0};
+float w_shiny = 0.078125;
+
 
 //Prints manual to console
 void printManual()
@@ -237,35 +244,36 @@ void generateMaterialList()
 	materialList.push_back("chrome");
 	materialList.push_back("emerald");
 	materialList.push_back("redplastic");
+	materialList.push_back("whiterubber");
 }
 
 void selectMaterial(particle p)
 {
 	if(p.getMaterial()=="ruby"){
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, r_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, r_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, r_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, r_shiny);
 	} else if(p.getMaterial()=="chrome"){
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, b_amb);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, b_dif);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, b_spec);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, b_shiny);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, c_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, c_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, c_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, c_shiny);
 	} else if(p.getMaterial()=="emerald"){
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, e_amb);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, e_dif);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, e_spec);
 		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, e_shiny);
 	} else if(p.getMaterial()=="redplastic"){
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, r_amb);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, r_dif);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, r_spec);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, r_shiny);
-	} else if(p.getMaterial()==""){
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, r_amb);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, r_dif);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, r_spec);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, r_shiny);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, rp_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, rp_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, rp_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, rp_shiny);
+	} else if(p.getMaterial()=="whiterubber"){
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, w_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, w_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, w_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, w_shiny);
 	}
 }
 
@@ -448,7 +456,7 @@ void kbd(unsigned char key, int x, int y)
 	}
 	if(key=='5')
 	{
-		//materialSelectIndex=4;
+		materialSelectIndex=4;
 	}
 }
 
