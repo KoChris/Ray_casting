@@ -255,9 +255,55 @@ void load()
 	if(loadFrom.is_open())
 	{
 		getline(loadFrom,line);
+		cameraAngle = strtof(line);
+		getline(loadFrom,line);
+		xpos = strtof(line);
+		getline(loadFrom,line);
+		ypos = strtof(line);
+		getline(loadFrom,line);
+		zpos = strtof(line);
+		getline(loadFrom,line);
+		xrot = strtof(line);
+		getline(loadFrom,line);
+		yrot = strtof(line);
+		getline(loadFrom,line);
+		angle = strtof(line);
+	
+		getline(loadFrom,line);
+		//saveTo << mouseActive;
 		
+		getline(loadFrom,line);
+		saveTo << sceneRotation[0];
+		getline(loadFrom,line);
+		saveTo << sceneRotation[1];
+		getline(loadFrom,line);
+		saveTo << lightsource1[0];
+		getline(loadFrom,line);
+		saveTo << lightsource2[0];
+		getline(loadFrom,line);
+		saveTo << lightsource1[1];
+		getline(loadFrom,line);
+		saveTo << lightsource2[1];
+		getline(loadFrom,line);
+		saveTo << lightsource1[2];
+		getline(loadFrom,line);
+		saveTo << lightsource2[2];
 		
-		
+		getline(loadFrom,line);
+		//continue this for required load variables
+		//bool keyboard[4]; //Arrow Keys
+		//bool* keySpecialStates = new bool[256];
+
+		getline(loadFrom,line);
+		shapeSelectIndex = atoi(line);
+		getline(loadFrom,line);
+		materialSelectIndex = atoi(line);
+		getline(loadFrom,line);
+		selectedObjectIndex = atoi(line);
+
+		getline(loadFrom,line);
+		//particleList;
+				
 		loadFrom.close();
 	}
 	else
