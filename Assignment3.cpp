@@ -14,10 +14,6 @@
 #include "Particle.h"
 #include "TrigLib.h"
 
-//Time declaration for update func
-#define SECS_PER_TICK 0.0083
-clock_t lastUpdateTime;
-
 using namespace std;
 
 //Declaring Variables
@@ -34,7 +30,7 @@ float lastx, lasty;
 bool mouseActive;
 
 //Scene Rotation angle
-float sceneRotation[2];
+float sceneRotation[3];
 
 //Initial light source variable
 float lightsource1[4] = {0.0,0.0,150.0,1.0};
@@ -274,7 +270,6 @@ void drawBoundingBox(particle p)
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, box_col);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, box_col);
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, box_shine);
-
 	if(p.getShape()=="cube")
 	{
 		glutWireCube(p.getSize()+0.5);
@@ -297,7 +292,7 @@ void drawBoundingBox(particle p)
 		glRotatef(90,1,0,0);
 		glutWireTeapot(p.getSize()+0.5);
 		glPopMatrix();
-	}	
+	}
 }
 
 
@@ -305,7 +300,7 @@ void drawBoundingBox(particle p)
 //Creating and Deleting of objects
 void createObject(point3D pos)
 {
-	particleList.push_back(particle(pos,colour(180,120,240),particleSizeDefault,point3D(1,1,1),vec3D(0,0,0),shapeList[shapeSelectIndex],materialList[materialSelectIndex]));
+	particleList.push_back(particle(pos,colour(0,0,0),particleSizeDefault,point3D(1,1,1),vec3D(0,0,0),shapeList[shapeSelectIndex],materialList[materialSelectIndex]));
 }
 
 void deleteObject(point3D pos)
@@ -654,8 +649,6 @@ void save()
 		saveTo << "\n";
 		saveTo << angle;
 		saveTo << "\n";
-		saveTo << mouseActive;
-		saveTo << "\n";
 		saveTo << sceneRotation[0];
 		saveTo << "\n";
 		saveTo << sceneRotation[1];
@@ -736,10 +729,6 @@ void load()
 		yrot = ::atof(line.c_str());
 		getline(loadFrom,line);
 		angle = ::atof(line.c_str());
-	
-		getline(loadFrom,line);
-		//saveTo << mouseActive;
-		
 		getline(loadFrom,line);
 		sceneRotation[0] = ::atof(line.c_str());
 		getline(loadFrom,line);
@@ -811,11 +800,13 @@ void kbd(unsigned char key, int x, int y)
 	}
 	if(key == 'l' || key == 'L')
 	{
+		particleList.clear();
+		mouseActive = false;
 		load();
 	}
 		
 	//Object deselect
-	if(key=='t' && key == 'T')
+	if(key=='t' || key == 'T')
 	{
 		selectedObjectIndex = -1;
 	}
@@ -916,11 +907,11 @@ void kbd(unsigned char key, int x, int y)
 	//Rotate view around z-axis
 	if(key == '7')
 	{
-		keyboard[0] = !keyboard[0];
+		cameraAngle+=1;
 	}
 	if(key == '8')
 	{
-		keyboard[1] = !keyboard[1];
+		cameraAngle-=1;
 	}
 	if(key == '9')
 	{
@@ -1103,32 +1094,9 @@ void SpecialKeyInput(int key, int x, int y)
 	}
 }
 
-
-//updates camera position
-void updateCamera(double deltaTime)
-{
-	//Camera Angles
-	if(keyboard[0])
-	{
-		cameraAngle+=0.25;
-	}
-	else if(keyboard[1])
-	{
-		cameraAngle-=0.25;
-	}
-	
-	glutPostRedisplay();
-}
-
 //Idle function - updates camera & lighting
 void update(void)
 {
-	while((lastUpdateTime + CLOCKS_PER_SEC * SECS_PER_TICK < clock()) )
-	{
-		lastUpdateTime += CLOCKS_PER_SEC*SECS_PER_TICK;
-		updateCamera(SECS_PER_TICK);
-	}
-
 	//Updates light source position
 	GLfloat lightpos1[] = {lightsource1[0],lightsource1[1],lightsource1[2],lightsource1[3]};
 	glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
