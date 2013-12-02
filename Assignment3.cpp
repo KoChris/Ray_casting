@@ -45,6 +45,7 @@ float lightsourceSize = 5.0;
 int particleSizeDefault = 5;
 
 //Variables for keyboard
+bool keyboard[2];
 bool* keySpecialStates = new bool[256];
 
 //Index for different shapes
@@ -819,6 +820,7 @@ void kbd(unsigned char key, int x, int y)
 		selectedObjectIndex = -1;
 	}
 
+	//Reset Screen
 	if(key == 'r' || key == 'R')
 	{
 		selectedObjectIndex = -1;
@@ -911,6 +913,15 @@ void kbd(unsigned char key, int x, int y)
 		materialSelectIndex=4;
 	}
 
+	//Rotate view around z-axis
+	if(key == '7')
+	{
+		keyboard[0] = !keyboard[0];
+	}
+	if(key == '8')
+	{
+		keyboard[1] = !keyboard[1];
+	}
 	if(key == '9')
 	{
 		sceneRotation[0] += 1;
@@ -1093,10 +1104,32 @@ void SpecialKeyInput(int key, int x, int y)
 }
 
 
+//updates camera position
+void updateCamera(double deltaTime)
+{
+	//Camera Angles
+	if(keyboard[0])
+	{
+		cameraAngle+=0.25;
+	}
+	else if(keyboard[1])
+	{
+		cameraAngle-=0.25;
+	}
+	
+	glutPostRedisplay();
+}
 
 //Idle function - updates camera & lighting
 void update(void)
 {
+	while((lastUpdateTime + CLOCKS_PER_SEC * SECS_PER_TICK < clock()) )
+	{
+		lastUpdateTime += CLOCKS_PER_SEC*SECS_PER_TICK;
+		updateCamera(SECS_PER_TICK);
+	}
+
+	//Updates light source position
 	GLfloat lightpos1[] = {lightsource1[0],lightsource1[1],lightsource1[2],lightsource1[3]};
 	glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
 
