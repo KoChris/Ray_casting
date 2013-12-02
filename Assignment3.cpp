@@ -226,16 +226,38 @@ void save()
 		saveTo << "\n";
 		saveTo << lightsource2[2];
 		saveTo << "\n";
-		
-		//continue this for required save variables
-		//bool keyboard[4]; //Arrow Keys
-		//bool* keySpecialStates = new bool[256];
-
 		saveTo << shapeSelectIndex;
+		saveTo << "\n";
 		saveTo << materialSelectIndex;
+		saveTo << "\n";
 		saveTo << selectedObjectIndex;
-
-		//particleList;
+		saveTo << "\n";
+		
+		for(int i=0; i < particleList.size(); i++)
+		{
+			saveTo << particleList[i].getPosition().x;
+			saveTo << "\n";
+			saveTo << particleList[i].getPosition().y;
+			saveTo << "\n";
+			saveTo << particleList[i].getPosition().z;
+			saveTo << "\n";
+			saveTo << particleList[i].getScale().x;
+			saveTo << "\n";
+			saveTo << particleList[i].getScale().y;
+			saveTo << "\n";
+			saveTo << particleList[i].getScale().z;
+			saveTo << "\n";
+			saveTo << particleList[i].getRotation().x;
+			saveTo << "\n";
+			saveTo << particleList[i].getRotation().y;
+			saveTo << "\n";
+			saveTo << particleList[i].getRotation().z;
+			saveTo << "\n";
+			saveTo << particleList[i].getShape();
+			saveTo << "\n";
+			saveTo << particleList[i].getMaterial();
+			saveTo << "\n";
+		}
 		saveTo.close();
 	}
 	else 
@@ -289,22 +311,37 @@ void load()
 		lightsource1[2] = ::atof(line.c_str());
 		getline(loadFrom,line);
 		lightsource2[2] = ::atof(line.c_str());
-		
-		getline(loadFrom,line);
-		//continue this for required load variables
-		//bool keyboard[4]; //Arrow Keys
-		//bool* keySpecialStates = new bool[256];
-
 		getline(loadFrom,line);
 		shapeSelectIndex = ::atoi(line.c_str());
 		getline(loadFrom,line);
 		materialSelectIndex = ::atoi(line.c_str());
 		getline(loadFrom,line);
 		selectedObjectIndex = ::atoi(line.c_str());
-
-		getline(loadFrom,line);
-		//particleList;
-				
+		while ( getline (myfile,line) )
+		{
+			float posX, posY, posZ, scaleX, scaleY, scaleZ, rotX, rotY, rotZ;
+			string shape, material;
+			posX = ::atof(line.c_str());
+			getline(loadFrom,line);
+			posY = ::atof(line.c_str());
+			getline(loadFrom,line);
+			posZ = ::atof(line.c_str());
+			getline(loadFrom,line);
+			scaleX = ::atof(line.c_str());
+			getline(loadFrom,line);
+			scaleY = ::atof(line.c_str());
+			getline(loadFrom,line);
+			scaleZ = ::atof(line.c_str());
+			getline(loadFrom,line);
+			rotX = ::atof(line.c_str());
+			getline(loadFrom,line);
+			rotY = ::atof(line.c_str());
+			getline(loadFrom,line);
+			rotZ = ::atof(line.c_str());
+			getline(loadFrom,line);
+			shape = line;
+			particleList.push_back(particle(point3D(posX,posY,posZ),colour(0,0,0),particleSizeDefault,point3D(scaleX,scaleY,scaleZ),vec3D(rotX,rotY,rotZ),shape,line));
+		}
 		loadFrom.close();
 	}
 	else
