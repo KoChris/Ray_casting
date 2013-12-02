@@ -1,3 +1,10 @@
+/*
+Simple Modeller
+Name: Brendan Sim, Chris Ko
+macID: simb3, koh4
+Student #: 1139649, 1156482
+*/
+
 #include <windows.h>
 #include <stdlib.h>
 #include <gl/glut.h>
@@ -100,84 +107,84 @@ float w_shiny = 0.078125;
 //Prints manual to console
 void printManual()
 {
-	printf("Program\n");
-	printf("Q - Quit program\n");
-	printf("R - Reset program\n");
-	printf("O - Save\n");
-	printf("L - Load\n");
-	printf("\n");
-	printf("Placing Objects\n");
-	printf("Spacebar - Place objects\n");
-	printf("Mouse Wheel - Cycle through shapes\n");
-	printf("PAGE_UP - Cycle through shapes\n");
-	printf("PAGE_DOWN - Cycle through shapes\n");
-	printf("\n");
-	printf("Material\n");
-	printf("] - Apply current selected material to pointed object\n");
-	printf("NumberKey (1-5) - Different Materials\n");
-	printf("	1: Cyan Plastic\n");
-	printf("	2: Copper\n");
-	printf("	3: Emerald\n");
-	printf("	4: Red Plastic\n");
-	printf("	5: White Rubber\n");	
-	printf("\n");
-	printf("Object Selection\n");
-	printf("LMB - Select an object to transform\n");
-	printf("[ - Deselects the selected object\n");
-	printf("RMB - Delete the pointed object\n");
-	printf("\n");
-	printf("Object Scaling\n");
-	printf("< - Scale down object in x axis\n");
-	printf("> - Scale up object in x axis\n");
-	printf("Ctrl + < - Scale down object in y axis\n");
-	printf("Ctrl + > - Scale up object in y axis\n");
-	printf("Alt + < - Scale down object in z axis\n");
-	printf("Alt + > - Scale up object in z axis\n");
-	printf("\n");
-	printf("Scene Rotation\n");
-	printf("9 & 0 - Rotate around x axis\n");
-	printf("- & = - Rotate around y axis\n");
-	printf("\n");
-	printf("Object Rotation\n");
-	printf("Z - Positive rotation around z axis\n");
-	printf("X - Positive rotation around x axis\n");
-	printf("C - Positive rotation around y axis\n");
-	printf("Ctrl + Z - Negative rotation around z axis\n");
-	printf("Ctrl + X - Negative rotation around x axis\n");
-	printf("Ctrl + C - Negative rotation around y axis\n");
-	printf("\n");
-	printf("Object Translation\n");
-	printf("Arrow Keys\n");
-	printf("Left  - Translate along positive x axis\n");
-	printf("Right - Translate along Negative x axis\n");
-	printf("Up    - Translate along Negative y axis\n");
-	printf("Down  - Translate along positive y axis\n");
-	printf("Ctrl + Up    - Translate along Negative z axis\n");
-	printf("Ctrl + Down  - Translate along positive z axis\n");
-	printf("\n");
-	printf("Camera Control\n");
-	printf("~ - Toggle camera control\n");
-	printf("WASD Keys\n");
-	printf("W - Move forwards\n");
-	printf("A - Move left\n");
-	printf("S - Move backwards\n");
-	printf("D - Move right\n");
-	printf("\n");
-	printf("Lighting Control\n");
-	printf("Camera 1\n");
-	printf("U - Translate Lightsource 1 along Positive x axis\n");
-	printf("I - Translate Lightsource 1 along Negative x axis\n");
-	printf("J - Translate Lightsource 1 along Positive y axis\n");
-	printf("K - Translate Lightsource 1 along Negative y axis\n");
-	printf("N - Translate Lightsource 1 along Positive z axis\n");
-	printf("M - Translate Lightsource 1 along Negative z axis\n");
-	printf("Camera 2\n");
-	printf("Ctrl + U - Translate Lightsource 2 along Positive x axis\n");
-	printf("Ctrl + I - Translate Lightsource 2 along Negative x axis\n");
-	printf("Ctrl + J - Translate Lightsource 2 along Positive y axis\n");
-	printf("Ctrl + K - Translate Lightsource 2 along Negative y axis\n");
-	printf("Ctrl + N - Translate Lightsource 2 along Positive z axis\n");
-	printf("Ctrl + M - Translate Lightsource 2 along Negative z axis\n");
+	 printf("Program\n");
+	 printf("Q - Quit program\n");
+	 printf("R - Reset program\n");
+	 printf("O - Save\n");
+	 printf("L - Load\n");
+	 printf("\n");
+	 printf("Placing Objects\n");
+	 printf("Spacebar - Place objects\n");
+	 printf("Mouse Wheel - Cycle through shapes\n");
+	 printf("PAGE_UP - Cycle through shapes\n");
+	 printf("PAGE_DOWN - Cycle through shapes\n");
+	 printf("\n");
+	 printf("Material\n");
+	 printf("E - Apply current selected material to pointed object\n");
+	 printf("NumberKey (1-5) - Different Materials\n");
+	 printf(" 1: Cyan Plastic\n");
+	 printf(" 2: Copper\n");
+	 printf(" 3: Emerald\n");
+	 printf(" 4: Red Plastic\n");
+	 printf(" 5: White Rubber\n"); 
+	 printf("\n");
+	 printf("Object Selection\n");
+	 printf("LMB - Select an object to transform\n");
+	 printf("T - Deselects the selected object\n");
+	 printf("RMB - Delete the pointed object\n");
+	 printf("\n");
+	 printf("Object Scaling\n");
+	 printf("f - Scale down object in x axis\n");
+	 printf("F - Scale up object in x axis\n");
+	 printf("g - Scale down object in y axis\n");
+	 printf("G - Scale up object in y axis\n");
+	 printf("v - Scale down object in z axis\n");
+	 printf("V - Scale up object in z axis\n");
+	 printf("\n");
+	 printf("Scene Rotation\n");
+	 printf("9 & 0 - Rotate around x axis\n");
+	 printf("- & = - Rotate around y axis\n");
+	 printf("\n");
+	 printf("Object Rotation\n");
+	 printf("z - Positive rotation around z axis\n");
+	 printf("x - Positive rotation around x axis\n");
+	 printf("c - Positive rotation around y axis\n");
+	 printf("Z - Negative rotation around z axis\n");
+	 printf("X - Negative rotation around x axis\n");
+	 printf("C - Negative rotation around y axis\n");
+	 printf("\n");
+	 printf("Object Translation\n");
+	 printf("Arrow Keys\n");
+	 printf("Left  - Translate along positive x axis\n");
+	 printf("Right - Translate along Negative x axis\n");
+	 printf("Up    - Translate along Negative y axis\n");
+	 printf("Down  - Translate along positive y axis\n");
+	 printf("Ctrl + Up    - Translate along Negative z axis\n");
+	 printf("Ctrl + Down  - Translate along positive z axis\n");
+	 printf("\n");
+	 printf("Camera Control\n");
+	 printf("~ - Toggle camera control\n");
+	 printf("WASD Keys\n");
+	 printf("W - Move forwards\n");
+	 printf("A - Move left\n");
+	 printf("S - Move backwards\n");
+	 printf("D - Move right\n");
+	 printf("\n");
+	 printf("Lighting Control\n");
+	 printf("Camera 1\n");
+	 printf("u - Translate Lightsource 1 along Positive x axis\n");
+	 printf("i - Translate Lightsource 1 along Negative x axis\n");
+	 printf("j - Translate Lightsource 1 along Positive y axis\n");
+	 printf("k - Translate Lightsource 1 along Negative y axis\n");
+	 printf("m - Translate Lightsource 1 along Positive z axis\n");
+	 printf("n - Translate Lightsource 1 along Negative z axis\n");
+	 printf("Camera 2\n");
+	 printf("U - Translate Lightsource 2 along Positive x axis\n");
+	 printf("I - Translate Lightsource 2 along Negative x axis\n");
+	 printf("J - Translate Lightsource 2 along Positive y axis\n");
+	 printf("K - Translate Lightsource 2 along Negative y axis\n");
+	 printf("N - Translate Lightsource 2 along Positive z axis\n");
+	 printf("M - Translate Lightsource 2 along Negative z axis\n");
 }
 
 //Draws the axis
