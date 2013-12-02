@@ -103,7 +103,84 @@ float w_shiny = 0.078125;
 //Prints manual to console
 void printManual()
 {
-
+	printf("Program\n");
+	printf("Q - Quit program\n");
+	printf("R - Reset program\n");
+	printf("O - Save\n");
+	printf("L - Load\n");
+	printf("\n");
+	printf("Placing Objects\n");
+	printf("Spacebar - Place objects\n");
+	printf("Mouse Wheel - Cycle through shapes\n");
+	printf("PAGE_UP - Cycle through shapes\n");
+	printf("PAGE_DOWN - Cycle through shapes\n");
+	printf("\n");
+	printf("Material\n");
+	printf("] - Apply current selected material to pointed object");
+	printf("NumberKey (1-5) - Different Materials\n");
+	printf("	1: Cyan Plastic\n");
+	printf("	2: Copper\n");
+	printf("	3: Emerald\n");
+	printf("	4: Red Plastic\n");
+	printf("	5: White Rubber\n");	
+	printf("\n");
+	printf("Object Selection\n");
+	printf("LMB - Select an object to transform\n");
+	printf("[ - Deselects the selected object\n");
+	printf("RMB - Delete the pointed object\n");
+	printf("\n");
+	printf("Object Scaling\n");
+	printf("< - Scale down object in x axis\n");
+	printf("> - Scale up object in x axis\n");
+	printf("Ctrl + < - Scale down object in y axis\n");
+	printf("Ctrl + > - Scale up object in y axis\n");
+	printf("Alt + < - Scale down object in z axis\n");
+	printf("Alt + > - Scale up object in z axis\n");
+	printf("\n");
+	printf("Scene Rotation\n");
+	printf("9 & 0 - Rotate around x axis\n");
+	printf("- & = - Rotate around y axis\n");
+	printf("\n");
+	printf("Object Rotation\n");
+	printf("Z - Positive rotation around z axis\n");
+	printf("X - Positive rotation around x axis\n");
+	printf("C - Positive rotation around y axis\n");
+	printf("Ctrl + Z - Negative rotation around z axis\n");
+	printf("Ctrl + X - Negative rotation around x axis\n");
+	printf("Ctrl + C - Negative rotation around y axis\n");
+	printf("\n");
+	printf("Object Translation\n");
+	printf("Arrow Keys\n");
+	printf("Left  - Translate along positive x axis\n");
+	printf("Right - Translate along Negative x axis\n");
+	printf("Up    - Translate along Negative y axis\n");
+	printf("Down  - Translate along positive y axis\n");
+	printf("Ctrl + Up    - Translate along Negative z axis\n");
+	printf("Ctrl + Down  - Translate along positive z axis\n");
+	printf("\n");
+	printf("Camera Control\n");
+	printf("~ - Toggle camera control\n");
+	printf("WASD Keys\n");
+	printf("W - Move forwards\n");
+	printf("A - Move left\n");
+	printf("S - Move backwards\n");
+	printf("D - Move right\n");
+	printf("\n");
+	printf("Lighting Control\n");
+	printf("Camera 1\n");
+	printf("U - Translate Lightsource 1 along Positive x axis\n");
+	printf("I - Translate Lightsource 1 along Negative x axis\n");
+	printf("J - Translate Lightsource 1 along Positive y axis\n");
+	printf("K - Translate Lightsource 1 along Negative y axis\n");
+	printf("N - Translate Lightsource 1 along Positive z axis\n");
+	printf("M - Translate Lightsource 1 along Negative z axis\n");
+	printf("Camera 2\n");
+	printf("Ctrl + U - Translate Lightsource 2 along Positive x axis\n");
+	printf("Ctrl + I - Translate Lightsource 2 along Negative x axis\n");
+	printf("Ctrl + J - Translate Lightsource 2 along Positive y axis\n");
+	printf("Ctrl + K - Translate Lightsource 2 along Negative y axis\n");
+	printf("Ctrl + N - Translate Lightsource 2 along Positive z axis\n");
+	printf("Ctrl + M - Translate Lightsource 2 along Negative z axis\n");
 }
 
 //Saves the current scene
@@ -623,8 +700,8 @@ point3D fetchLocation(int x, int y)
 //Handling keyboard input
 void kbd(unsigned char key, int x, int y)
 {
-	//if the "q" key is pressed, quit the program
-	if(key == 'q' || key == 'Q')
+	//if the "q" or esc key is pressed, quit the program
+	if(key == 'q' || key == 'Q' || key == 27)
 	{
 		exit(0);
 	}
@@ -798,8 +875,14 @@ void kbd(unsigned char key, int x, int y)
 		xpos -= float(cos(yrotrad)) * 2;
 		zpos -= float(sin(yrotrad)) * 2;
     }
-
-	//Material Modification
+	
+	//Object deselect
+	if(key=='[')
+	{
+		selectedObjectIndex = -1;
+	}
+	
+	//Material modification
 	if(key==']')
 	{
 		modifyObjectMaterial(fetchLocation(x, y));
@@ -830,7 +913,7 @@ void mouseMovement(int x, int y)
 		lastx=x; //set lastx to the current x position
 		lasty=y; //set lasty to the current y position
 		xrot += (float) diffy; //set the xrot to xrot with the addition of the difference in the y position
-		yrot += (float) diffx;    //set the xrot to yrot with the addition of the difference in the x position
+		yrot += (float) diffx; //set the xrot to yrot with the addition of the difference in the x position
 	}
 }
 
@@ -947,7 +1030,6 @@ void update(void)
 
 	lightList[0].setPosition(lightsource1[0],lightsource1[1],lightsource1[2]);
 	lightList[1].setPosition(lightsource2[0],lightsource2[1],lightsource2[2]);
-
 }
 
 void camera (void)
@@ -962,7 +1044,7 @@ void init(void)
 {
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0); 
-	//glEnable(GL_LIGHT1);
+	glEnable(GL_LIGHT1);
 
 	//Adding lights to light list
 	lightList.push_back(particle(
