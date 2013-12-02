@@ -8,6 +8,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 
 #include "Math3DLib.h"
 #include "Particle.h"
@@ -116,7 +117,7 @@ void printManual()
 	printf("PAGE_DOWN - Cycle through shapes\n");
 	printf("\n");
 	printf("Material\n");
-	printf("] - Apply current selected material to pointed object");
+	printf("] - Apply current selected material to pointed object\n");
 	printf("NumberKey (1-5) - Different Materials\n");
 	printf("	1: Cyan Plastic\n");
 	printf("	2: Copper\n");
@@ -255,39 +256,39 @@ void load()
 	if(loadFrom.is_open())
 	{
 		getline(loadFrom,line);
-		cameraAngle = strtof(line);
+		cameraAngle = ::atof(line.c_str());
 		getline(loadFrom,line);
-		xpos = strtof(line);
+		xpos = ::atof(line.c_str());
 		getline(loadFrom,line);
-		ypos = strtof(line);
+		ypos = ::atof(line.c_str());
 		getline(loadFrom,line);
-		zpos = strtof(line);
+		zpos = ::atof(line.c_str());
 		getline(loadFrom,line);
-		xrot = strtof(line);
+		xrot = ::atof(line.c_str());
 		getline(loadFrom,line);
-		yrot = strtof(line);
+		yrot = ::atof(line.c_str());
 		getline(loadFrom,line);
-		angle = strtof(line);
+		angle = ::atof(line.c_str());
 	
 		getline(loadFrom,line);
 		//saveTo << mouseActive;
 		
 		getline(loadFrom,line);
-		sceneRotation[0] = strtof(line);
+		sceneRotation[0] = ::atof(line.c_str());
 		getline(loadFrom,line);
-		sceneRotation[1] = strtof(line);
+		sceneRotation[1] = ::atof(line.c_str());
 		getline(loadFrom,line);
-		lightsource1[0] = strtof(line);
+		lightsource1[0] = ::atof(line.c_str());
 		getline(loadFrom,line);
-		lightsource2[0] = strtof(line);
+		lightsource2[0] = ::atof(line.c_str());
 		getline(loadFrom,line);
-		lightsource1[1] = strtof(line);
+		lightsource1[1] = ::atof(line.c_str());
 		getline(loadFrom,line);
-		lightsource2[1] = strtof(line);
+		lightsource2[1] = ::atof(line.c_str());
 		getline(loadFrom,line);
-		lightsource1[2] = strtof(line);
+		lightsource1[2] = ::atof(line.c_str());
 		getline(loadFrom,line);
-		lightsource2[2] = strtof(line);
+		lightsource2[2] = ::atof(line.c_str());
 		
 		getline(loadFrom,line);
 		//continue this for required load variables
@@ -295,11 +296,11 @@ void load()
 		//bool* keySpecialStates = new bool[256];
 
 		getline(loadFrom,line);
-		shapeSelectIndex = atoi(line);
+		shapeSelectIndex = ::atoi(line.c_str());
 		getline(loadFrom,line);
-		materialSelectIndex = atoi(line);
+		materialSelectIndex = ::atoi(line.c_str());
 		getline(loadFrom,line);
-		selectedObjectIndex = atoi(line);
+		selectedObjectIndex = ::atoi(line.c_str());
 
 		getline(loadFrom,line);
 		//particleList;
@@ -1080,7 +1081,7 @@ void update(void)
 
 void camera (void)
 {
-    glRotatef(xrot,1.0,0.0,0.0);  //rotate our camera on teh x-axis (left and right)
+    glRotatef(xrot,1.0,0.0,0.0);  //rotate our camera on the x-axis (left and right)
     glRotatef(yrot,0.0,1.0,0.0);  //rotate our camera on the y-axis (up and down)
     glTranslated(-xpos,-ypos,-zpos); //translate the screento the position of our camera
 }
