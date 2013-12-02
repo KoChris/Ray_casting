@@ -273,21 +273,21 @@ void load()
 		//saveTo << mouseActive;
 		
 		getline(loadFrom,line);
-		saveTo << sceneRotation[0];
+		sceneRotation[0] = strtof(line);
 		getline(loadFrom,line);
-		saveTo << sceneRotation[1];
+		sceneRotation[1] = strtof(line);
 		getline(loadFrom,line);
-		saveTo << lightsource1[0];
+		lightsource1[0] = strtof(line);
 		getline(loadFrom,line);
-		saveTo << lightsource2[0];
+		lightsource2[0] = strtof(line);
 		getline(loadFrom,line);
-		saveTo << lightsource1[1];
+		lightsource1[1] = strtof(line);
 		getline(loadFrom,line);
-		saveTo << lightsource2[1];
+		lightsource2[1] = strtof(line);
 		getline(loadFrom,line);
-		saveTo << lightsource1[2];
+		lightsource1[2] = strtof(line);
 		getline(loadFrom,line);
-		saveTo << lightsource2[2];
+		lightsource2[2] = strtof(line);
 		
 		getline(loadFrom,line);
 		//continue this for required load variables
