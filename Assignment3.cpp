@@ -45,7 +45,6 @@ float lightsourceSize = 5.0;
 int particleSizeDefault = 5;
 
 //Variables for keyboard
-bool keyboard[4]; //Arrow Keys
 bool* keySpecialStates = new bool[256];
 
 //Index for different shapes
@@ -184,172 +183,6 @@ void printManual()
 	printf("Ctrl + M - Translate Lightsource 2 along Negative z axis\n");
 }
 
-//Saves the current scene
-void save()
-{
-	string file = "";
-	printf("Enter the name of the file you would like to save to (ending in .txt)\n");
-	getline(cin, file);
-
-	ofstream saveTo (file);
-	if(saveTo.is_open())
-	{
-		saveTo << cameraAngle;
-		saveTo << "\n";
-		saveTo << xpos;
-		saveTo << "\n";
-		saveTo << ypos;
-		saveTo << "\n";
-		saveTo << zpos;
-		saveTo << "\n";
-		saveTo << xrot;
-		saveTo << "\n";
-		saveTo << yrot;
-		saveTo << "\n";
-		saveTo << angle;
-		saveTo << "\n";
-		saveTo << mouseActive;
-		saveTo << "\n";
-		saveTo << sceneRotation[0];
-		saveTo << "\n";
-		saveTo << sceneRotation[1];
-		saveTo << "\n";
-		saveTo << lightsource1[0];
-		saveTo << "\n";
-		saveTo << lightsource2[0];
-		saveTo << "\n";
-		saveTo << lightsource1[1];
-		saveTo << "\n";
-		saveTo << lightsource2[1];
-		saveTo << "\n";
-		saveTo << lightsource1[2];
-		saveTo << "\n";
-		saveTo << lightsource2[2];
-		saveTo << "\n";
-		saveTo << shapeSelectIndex;
-		saveTo << "\n";
-		saveTo << materialSelectIndex;
-		saveTo << "\n";
-		saveTo << selectedObjectIndex;
-		saveTo << "\n";
-		
-		for(int i=0; i < particleList.size(); i++)
-		{
-			saveTo << particleList[i].getPosition().x;
-			saveTo << "\n";
-			saveTo << particleList[i].getPosition().y;
-			saveTo << "\n";
-			saveTo << particleList[i].getPosition().z;
-			saveTo << "\n";
-			saveTo << particleList[i].getScale().x;
-			saveTo << "\n";
-			saveTo << particleList[i].getScale().y;
-			saveTo << "\n";
-			saveTo << particleList[i].getScale().z;
-			saveTo << "\n";
-			saveTo << particleList[i].getRotation().x;
-			saveTo << "\n";
-			saveTo << particleList[i].getRotation().y;
-			saveTo << "\n";
-			saveTo << particleList[i].getRotation().z;
-			saveTo << "\n";
-			saveTo << particleList[i].getShape();
-			saveTo << "\n";
-			saveTo << particleList[i].getMaterial();
-			saveTo << "\n";
-		}
-		saveTo.close();
-	}
-	else 
-	{
-		printf("Unable to save to file\n");
-	}
-}
-
-//Loads the current scene
-void load()
-{
-	string file = "";
-	printf("Enter the name of the file you would like to load from (ending in .txt)\n");
-	getline(cin, file);
-
-	string line;
-	ifstream loadFrom (file);
-	if(loadFrom.is_open())
-	{
-		getline(loadFrom,line);
-		cameraAngle = ::atof(line.c_str());
-		getline(loadFrom,line);
-		xpos = ::atof(line.c_str());
-		getline(loadFrom,line);
-		ypos = ::atof(line.c_str());
-		getline(loadFrom,line);
-		zpos = ::atof(line.c_str());
-		getline(loadFrom,line);
-		xrot = ::atof(line.c_str());
-		getline(loadFrom,line);
-		yrot = ::atof(line.c_str());
-		getline(loadFrom,line);
-		angle = ::atof(line.c_str());
-	
-		getline(loadFrom,line);
-		//saveTo << mouseActive;
-		
-		getline(loadFrom,line);
-		sceneRotation[0] = ::atof(line.c_str());
-		getline(loadFrom,line);
-		sceneRotation[1] = ::atof(line.c_str());
-		getline(loadFrom,line);
-		lightsource1[0] = ::atof(line.c_str());
-		getline(loadFrom,line);
-		lightsource2[0] = ::atof(line.c_str());
-		getline(loadFrom,line);
-		lightsource1[1] = ::atof(line.c_str());
-		getline(loadFrom,line);
-		lightsource2[1] = ::atof(line.c_str());
-		getline(loadFrom,line);
-		lightsource1[2] = ::atof(line.c_str());
-		getline(loadFrom,line);
-		lightsource2[2] = ::atof(line.c_str());
-		getline(loadFrom,line);
-		shapeSelectIndex = ::atoi(line.c_str());
-		getline(loadFrom,line);
-		materialSelectIndex = ::atoi(line.c_str());
-		getline(loadFrom,line);
-		selectedObjectIndex = ::atoi(line.c_str());
-		while ( getline (myfile,line) )
-		{
-			float posX, posY, posZ, scaleX, scaleY, scaleZ, rotX, rotY, rotZ;
-			string shape, material;
-			posX = ::atof(line.c_str());
-			getline(loadFrom,line);
-			posY = ::atof(line.c_str());
-			getline(loadFrom,line);
-			posZ = ::atof(line.c_str());
-			getline(loadFrom,line);
-			scaleX = ::atof(line.c_str());
-			getline(loadFrom,line);
-			scaleY = ::atof(line.c_str());
-			getline(loadFrom,line);
-			scaleZ = ::atof(line.c_str());
-			getline(loadFrom,line);
-			rotX = ::atof(line.c_str());
-			getline(loadFrom,line);
-			rotY = ::atof(line.c_str());
-			getline(loadFrom,line);
-			rotZ = ::atof(line.c_str());
-			getline(loadFrom,line);
-			shape = line;
-			particleList.push_back(particle(point3D(posX,posY,posZ),colour(0,0,0),particleSizeDefault,point3D(scaleX,scaleY,scaleZ),vec3D(rotX,rotY,rotZ),shape,line));
-		}
-		loadFrom.close();
-	}
-	else
-	{
-		printf("Unable to load file\n");
-	}
-}
-
 //Draws the axis
 void axis(int sizeX, int sizeY, int sizeZ)
 {
@@ -412,6 +245,8 @@ void drawScene(float size)
 	glEnd();
 }
 
+
+
 //Selection of objects
 void selectObject(point3D pos)
 {
@@ -429,6 +264,7 @@ void selectObject(point3D pos)
 	}
 }
 
+//Draws bounding boxes when selected
 void drawBoundingBox(particle p)
 {
 	float box_col[] = {0,1,0, 1.0};
@@ -462,6 +298,36 @@ void drawBoundingBox(particle p)
 		glPopMatrix();
 	}	
 }
+
+
+
+//Creating and Deleting of objects
+void createObject(point3D pos)
+{
+	particleList.push_back(particle(pos,colour(180,120,240),particleSizeDefault,point3D(1,1,1),vec3D(0,0,0),shapeList[shapeSelectIndex],materialList[materialSelectIndex]));
+}
+
+void deleteObject(point3D pos)
+{
+	if(!particleList.empty())
+	{
+		for(int i=0; i < particleList.size(); i++)
+		{
+			if(Math3DLib::distance(particleList[i].getPosition(),pos)<=particleList[i].getSize())
+			{
+				particleList.erase(particleList.begin()+i);
+				if(i = selectedObjectIndex)
+				{
+					selectedObjectIndex = -1;
+				}
+				break;
+			}
+		}
+		glutPostRedisplay();
+	}
+}
+
+
 
 //Rotation of objects
 void rotateObject(string s)
@@ -559,32 +425,6 @@ void scaleObject(string s)
 	}
 }
 
-//Creating and Deleting of objects
-void createObject(point3D pos)
-{
-	particleList.push_back(particle(pos,colour(180,120,240),particleSizeDefault,point3D(1,1,1),vec3D(0,0,0),shapeList[shapeSelectIndex],materialList[materialSelectIndex]));
-}
-
-void deleteObject(point3D pos)
-{
-	if(!particleList.empty())
-	{
-		for(int i=0; i < particleList.size(); i++)
-		{
-			if(Math3DLib::distance(particleList[i].getPosition(),pos)<=particleList[i].getSize())
-			{
-				particleList.erase(particleList.begin()+i);
-				if(i = selectedObjectIndex)
-				{
-					selectedObjectIndex = -1;
-				}
-				break;
-			}
-		}
-		glutPostRedisplay();
-	}
-}
-
 //Modifying object material
 void modifyObjectMaterial(point3D pos)
 {
@@ -601,6 +441,8 @@ void modifyObjectMaterial(point3D pos)
 		glutPostRedisplay();
 	}
 }
+
+
 
 //Functions for alternating shapes
 void generateShapeList()
@@ -663,6 +505,8 @@ void selectShape(particle p)
 	}
 }
 
+
+
 //Functions for alternating materials
 void generateMaterialList()
 {
@@ -711,6 +555,8 @@ void selectMaterial(particle p)
 		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, w_shiny);
 	}
 }
+
+
 
 //Drawing objects
 void objectDraw()
@@ -781,6 +627,174 @@ point3D fetchLocation(int x, int y)
 	return point3D(objX,objY,objZ);
 }
 
+
+
+//Saving and loading functions
+void save()
+{
+	string file = "";
+	printf("Enter the name of the file you would like to save to (ending in .txt)\n");
+	getline(cin, file);
+
+	ofstream saveTo (file);
+	if(saveTo.is_open())
+	{
+		saveTo << cameraAngle;
+		saveTo << "\n";
+		saveTo << xpos;
+		saveTo << "\n";
+		saveTo << ypos;
+		saveTo << "\n";
+		saveTo << zpos;
+		saveTo << "\n";
+		saveTo << xrot;
+		saveTo << "\n";
+		saveTo << yrot;
+		saveTo << "\n";
+		saveTo << angle;
+		saveTo << "\n";
+		saveTo << mouseActive;
+		saveTo << "\n";
+		saveTo << sceneRotation[0];
+		saveTo << "\n";
+		saveTo << sceneRotation[1];
+		saveTo << "\n";
+		saveTo << lightsource1[0];
+		saveTo << "\n";
+		saveTo << lightsource2[0];
+		saveTo << "\n";
+		saveTo << lightsource1[1];
+		saveTo << "\n";
+		saveTo << lightsource2[1];
+		saveTo << "\n";
+		saveTo << lightsource1[2];
+		saveTo << "\n";
+		saveTo << lightsource2[2];
+		saveTo << "\n";
+		saveTo << shapeSelectIndex;
+		saveTo << "\n";
+		saveTo << materialSelectIndex;
+		saveTo << "\n";
+		saveTo << selectedObjectIndex;
+		saveTo << "\n";
+		
+		for(int i=0; i < particleList.size(); i++)
+		{
+			saveTo << particleList[i].getPosition().x;
+			saveTo << "\n";
+			saveTo << particleList[i].getPosition().y;
+			saveTo << "\n";
+			saveTo << particleList[i].getPosition().z;
+			saveTo << "\n";
+			saveTo << particleList[i].getScale().x;
+			saveTo << "\n";
+			saveTo << particleList[i].getScale().y;
+			saveTo << "\n";
+			saveTo << particleList[i].getScale().z;
+			saveTo << "\n";
+			saveTo << particleList[i].getRotation().x;
+			saveTo << "\n";
+			saveTo << particleList[i].getRotation().y;
+			saveTo << "\n";
+			saveTo << particleList[i].getRotation().z;
+			saveTo << "\n";
+			saveTo << particleList[i].getShape();
+			saveTo << "\n";
+			saveTo << particleList[i].getMaterial();
+			saveTo << "\n";
+		}
+		saveTo.close();
+	}
+	else 
+	{
+		printf("Unable to save to file\n");
+	}
+}
+
+void load()
+{
+	string file = "";
+	printf("Enter the name of the file you would like to load from (ending in .txt)\n");
+	getline(cin, file);
+
+	string line;
+	ifstream loadFrom (file);
+	if(loadFrom.is_open())
+	{
+		getline(loadFrom,line);
+		cameraAngle = ::atof(line.c_str());
+		getline(loadFrom,line);
+		xpos = ::atof(line.c_str());
+		getline(loadFrom,line);
+		ypos = ::atof(line.c_str());
+		getline(loadFrom,line);
+		zpos = ::atof(line.c_str());
+		getline(loadFrom,line);
+		xrot = ::atof(line.c_str());
+		getline(loadFrom,line);
+		yrot = ::atof(line.c_str());
+		getline(loadFrom,line);
+		angle = ::atof(line.c_str());
+	
+		getline(loadFrom,line);
+		//saveTo << mouseActive;
+		
+		getline(loadFrom,line);
+		sceneRotation[0] = ::atof(line.c_str());
+		getline(loadFrom,line);
+		sceneRotation[1] = ::atof(line.c_str());
+		getline(loadFrom,line);
+		lightsource1[0] = ::atof(line.c_str());
+		getline(loadFrom,line);
+		lightsource2[0] = ::atof(line.c_str());
+		getline(loadFrom,line);
+		lightsource1[1] = ::atof(line.c_str());
+		getline(loadFrom,line);
+		lightsource2[1] = ::atof(line.c_str());
+		getline(loadFrom,line);
+		lightsource1[2] = ::atof(line.c_str());
+		getline(loadFrom,line);
+		lightsource2[2] = ::atof(line.c_str());
+		getline(loadFrom,line);
+		shapeSelectIndex = ::atoi(line.c_str());
+		getline(loadFrom,line);
+		materialSelectIndex = ::atoi(line.c_str());
+		getline(loadFrom,line);
+		selectedObjectIndex = ::atoi(line.c_str());
+		while ( getline (loadFrom,line) )
+		{
+			float posX, posY, posZ, scaleX, scaleY, scaleZ, rotX, rotY, rotZ;
+			string shape, material;
+			posX = ::atof(line.c_str());
+			getline(loadFrom,line);
+			posY = ::atof(line.c_str());
+			posZ = ::atof(line.c_str());
+			getline(loadFrom,line);
+			scaleX = ::atof(line.c_str());
+			getline(loadFrom,line);
+			scaleY = ::atof(line.c_str());
+			getline(loadFrom,line);
+			scaleZ = ::atof(line.c_str());
+			getline(loadFrom,line);
+			rotX = ::atof(line.c_str());
+			getline(loadFrom,line);
+			rotY = ::atof(line.c_str());
+			getline(loadFrom,line);
+			rotZ = ::atof(line.c_str());
+			getline(loadFrom,line);
+			shape = line;
+			particleList.push_back(particle(point3D(posX,posY,posZ),colour(0,0,0),particleSizeDefault,point3D(scaleX,scaleY,scaleZ),vec3D(rotX,rotY,rotZ),shape,line));
+		}
+		loadFrom.close();
+	}
+	else
+	{
+		printf("Unable to load file\n");
+	}
+}
+
+
+
 //Handling keyboard input
 void kbd(unsigned char key, int x, int y)
 {
@@ -789,88 +803,84 @@ void kbd(unsigned char key, int x, int y)
 	{
 		exit(0);
 	}
-	if(key == 'f' || key == 'F')
+	//Save and Load func
+	if(key == 'o' || key == 'O')
 	{
-		
+		save();
 	}
+	if(key == 'l' || key == 'L')
+	{
+		load();
+	}
+		
+	//Object deselect
+	if(key=='t' && key == 'T')
+	{
+		selectedObjectIndex = -1;
+	}
+
 	if(key == 'r' || key == 'R')
 	{
 		selectedObjectIndex = -1;
 		particleList.clear();
 	}
 
-	//Light source Controls  **CTRL handles light source 1
-	if(key == 'u' || key == 'U')
+	//Modifying object material
+	if(key == 'e' || key == 'E')
 	{
-		int mod = glutGetModifiers();
-		if (mod == GLUT_ACTIVE_CTRL)
-		{
-			lightsource2[0] -= 10;
-		}
-		else
-		{
-			lightsource1[0] -= 10;
-		}
+		modifyObjectMaterial(fetchLocation(x,y));
 	}
-	if(key == 'i' || key == 'I')
+
+	//Light source 1
+	if(key == 'u')
 	{
-		int mod = glutGetModifiers();
-		if (mod == GLUT_ACTIVE_CTRL)
-		{
-			lightsource2[0] += 10;
-		}
-		else
-		{
-			lightsource1[0] += 10;
-		}
+		lightsource1[0] -= 10;
 	}
-	if(key == 'j' || key == 'J')
+	if(key == 'i')
 	{
-		int mod = glutGetModifiers();
-		if (mod == GLUT_ACTIVE_CTRL)
-		{
-			lightsource2[1] -= 10;
-		}
-		else
-		{
-			lightsource1[1] -= 10;
-		}
+		lightsource1[0] += 10;
 	}
-	if(key == 'k' || key == 'K')
+	if(key == 'j')
 	{
-		int mod = glutGetModifiers();
-		if (mod == GLUT_ACTIVE_CTRL)
-		{
-			lightsource2[1] += 10;
-		}
-		else
-		{
-			lightsource1[1] += 10;
-		}
+		lightsource1[1] -= 10;
 	}
-	if(key == 'n' || key == 'N')
+	if(key == 'k')
 	{
-		int mod = glutGetModifiers();
-		if (mod == GLUT_ACTIVE_CTRL)
-		{
-			lightsource2[2] -= 10;
-		}
-		else
-		{
-			lightsource1[2] -= 10;
-		}
+		lightsource1[1] += 10;
 	}
-	if(key == 'm' || key == 'M')
+	if(key == 'n')
 	{
-		int mod = glutGetModifiers();
-		if (mod == GLUT_ACTIVE_CTRL)
-		{
-			lightsource2[2] += 10;
-		}
-		else
-		{
-			lightsource1[2] += 10;
-		}
+		lightsource1[2] -= 10;
+	}
+	if(key == 'm')
+	{
+		lightsource1[2] += 10;
+	}
+
+	//Lightsource 2
+	if(key == 'U')
+	{
+		lightsource2[0] -= 10;
+	}
+	if(key == 'I')
+	{
+		lightsource2[0] += 10;
+	}
+	if(key == 'J')
+	{
+		lightsource2[1] -= 10;
+	}
+	if(key == 'K')
+	{
+		lightsource2[1] += 10;
+	}
+	if(key == 'N')
+	{
+		lightsource2[2] -= 10;
+	}
+	if(key == 'M')
+	{
+		lightsource2[2] += 10;
 	}
 
 	//Placing blocks
@@ -959,18 +969,6 @@ void kbd(unsigned char key, int x, int y)
 		xpos -= float(cos(yrotrad)) * 2;
 		zpos -= float(sin(yrotrad)) * 2;
     }
-	
-	//Object deselect
-	if(key=='[')
-	{
-		selectedObjectIndex = -1;
-	}
-	
-	//Material modification
-	if(key==']')
-	{
-		modifyObjectMaterial(fetchLocation(x, y));
-	}
 
 	//Transformations
 	if (key=='z')
@@ -984,6 +982,44 @@ void kbd(unsigned char key, int x, int y)
 	if (key=='c')
 	{
 		rotateObject("y");
+	}
+	if (key=='Z')
+	{
+		rotateObject("-z");
+	}
+	if (key=='X')
+	{
+		rotateObject("-x");
+	}
+	if (key=='C')
+	{
+		rotateObject("-y");
+	}
+
+	//Scaling objects
+	if(key == 'f')
+	{
+		scaleObject("x");
+	}
+	if(key == 'g')
+	{
+		scaleObject("y");
+	}
+	if(key == 'v')
+	{
+		scaleObject("z");
+	}
+	if(key == 'F')
+	{
+		scaleObject("-x");
+	}
+	if(key == 'G')
+	{
+		scaleObject("-y");
+	}
+	if(key == 'V')
+	{
+		scaleObject("-z");
 	}
 }
 
@@ -1024,19 +1060,19 @@ void SpecialKeyInput(int key, int x, int y)
 {
 	if(key == GLUT_KEY_LEFT)
 	{
-		keyboard[0] = true;
+		translateObject("x");
 	}
 	if(key == GLUT_KEY_RIGHT)
 	{
-		keyboard[1] = true;
+		translateObject("-x");
 	}
 	if(key == GLUT_KEY_UP)
 	{
-		keyboard[2] = true;
+		translateObject("-y");
 	}
 	if(key == GLUT_KEY_DOWN)
 	{
-		keyboard[3] = true;
+		translateObject("y");
 	}
 	if(key == GLUT_KEY_PAGE_UP)
 	{
@@ -1046,66 +1082,21 @@ void SpecialKeyInput(int key, int x, int y)
 	{
 		prevShape();
 	}
-}
-
-void SpecialUpFunc(int key, int x, int y)
-{
-	if(key == GLUT_KEY_LEFT)
+	if(key == GLUT_KEY_HOME)
 	{
-		keyboard[0] = false;
+		translateObject("z");
 	}
-	if(key == GLUT_KEY_RIGHT)
+	if(key == GLUT_KEY_END)
 	{
-		keyboard[1] = false;
-	}
-	if(key == GLUT_KEY_UP)
-	{
-		keyboard[2] = false;
-	}
-	if(key == GLUT_KEY_DOWN)
-	{
-		keyboard[3] = false;
+		translateObject("-z");
 	}
 }
 
-//updates camera position
-void updateCamera(double deltaTime)
-{
-	//Camera Angles
-	if(keyboard[0])
-	{
-		cameraAngle+=0.5;
-	}
-	else if(keyboard[1])
-	{
-		cameraAngle-=0.5;
-	}
-	else if(keyboard[2])
-	{
-		cameraPos[2] += 1;
-	}
-	else if(keyboard[2])
-	{
-		cameraPos[2] += 0.05;
-	}
-	else if(keyboard[3])
-	{
-		cameraPos[2] -= 0.05;
-	}
-	
-	glutPostRedisplay();
-}
+
 
 //Idle function - updates camera & lighting
 void update(void)
 {
-	while((lastUpdateTime + CLOCKS_PER_SEC * SECS_PER_TICK < clock()) )
-	{
-		lastUpdateTime += CLOCKS_PER_SEC*SECS_PER_TICK;
-		updateCamera(SECS_PER_TICK);
-	}
-
-	//Updates light source position
 	GLfloat lightpos1[] = {lightsource1[0],lightsource1[1],lightsource1[2],lightsource1[3]};
 	glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
 
@@ -1221,7 +1212,6 @@ int main(int argc, char** argv)
 	//Handles inputs
 	glutKeyboardFunc(kbd);
 	glutSpecialFunc(SpecialKeyInput);
-	glutSpecialUpFunc(SpecialUpFunc);
 	glutPassiveMotionFunc(mouseMovement);
 	glutMouseFunc(MouseClick);
 
